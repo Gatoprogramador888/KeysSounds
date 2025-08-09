@@ -143,12 +143,17 @@
   <ItemGroup>
     <ClCompile Include="ADDMusic.cpp" />
     <ClCompile Include="ELIMusic.cpp" />
+    <ClCompile Include="Header.cpp" />
+    <ClCompile Include="IMusic.cpp" />
+    <ClCompile Include="MODMusic.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ADDMusic.h" />
     <ClInclude Include="ELIMusic.h" />
     <ClInclude Include="Header.h" />
+    <ClInclude Include="IMusic.h" />
+    <ClInclude Include="MODMusic.h" />
     <ClInclude Include="resource1.h" />
   </ItemGroup>
   <ItemGroup>

@@ -1,15 +1,15 @@
 #pragma once
 #include"Header.h"
 #include<Windows.h>
-#include<vector>
 #include"resource1.h"
+#include "IMusic.h"
 
 
-class ADDMusic {
+class ADDMusic : public IMusic
+{
 private:
-    std::vector<DIR> listMusic;
+    //std::vector<DIR> listMusic;
     size_t index = 0;
-    HWND Dlg = nullptr;
 
     ADDMusic() = default; // Constructor privado para singleton
 
@@ -41,11 +41,6 @@ public:
         return instance;
     }
 
-    void SetDialogHandle(HWND hwnd)
-    {
-        Dlg = hwnd;
-    }
-
     void Add()
     {
         std::string file = OpenFileDialog(Dlg);
@@ -54,18 +49,14 @@ public:
             return;
         }
 
-        HWND listBox = GetDlgItem(Dlg, LB_LMUSIC); // Asegúrate que CB_LIST esté definido en resource.h
-        SendMessageA(listBox, LB_ADDSTRING, NULL, (LPARAM)file.c_str());
-        SendMessageA(listBox, LB_SETCURSEL, (WPARAM)index, NULL);
-        //MessageBox(NULL, file.c_str(), "", MB_OK);
-
+        index = listMusic.size();
         listMusic.push_back(DIR{ file, index });
-        ++index;
-    }
 
-    const std::vector<DIR>& GetDIRList() const
-    {
-        return listMusic;
+        HWND listBox = GetItem(LB_LMUSIC);//GetDlgItem(Dlg, LB_LMUSIC);
+        SendMessageA(listBox, LB_ADDSTRING, NULL, (LPARAM)file.c_str());
+        SendMessageA(listBox, LB_SETITEMDATA, (WPARAM)index, (LPARAM) index);
+        std::string msg = "Added " + file + " with index:" + std::to_string(index);
+        MessageBox(NULL, msg.c_str(), "", MB_OK | MB_ICONINFORMATION);
     }
 
     // Evitar copia

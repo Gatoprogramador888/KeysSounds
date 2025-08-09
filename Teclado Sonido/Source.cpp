@@ -1,6 +1,8 @@
 #include "Header.h"
 #include "resource1.h"
 #include "ADDMusic.h"
+#include "ELIMusic.h"
+#include "MODMusic.h"
 #include <Windows.h>
 
 LRESULT CALLBACK DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
@@ -13,6 +15,8 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, PSTR cmdLine, int cShow)
     ShowWindow(hMain, SW_SHOW);
 
     ADDMusic::Instance().SetDialogHandle(hMain);
+    ELIMusic::Instance().SetDialogHandle(hMain);
+    MODMusic::Instance().SetDialogHandle(hMain);
 
     while (GetMessage(&msg, NULL, NULL, NULL))
     {
@@ -40,7 +44,12 @@ LRESULT CALLBACK DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
         if (LOWORD(wParam) == BTN_ELI)
         {
-            ADDMusic::Instance().Add();
+            ELIMusic::Instance().Eliminate();
+        }
+
+        if (LOWORD(wParam) == BTN_MOD)
+        {
+            MODMusic::Instance().Modify();
         }
     }
     break;
