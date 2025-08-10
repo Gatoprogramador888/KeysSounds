@@ -13,7 +13,7 @@ protected:
     HWND Dlg = nullptr;
 
 public:
-    virtual void SetDialogHandle(HWND hwnd)
+    virtual void SetDialogParent(HWND hwnd)
     {
         Dlg = hwnd;
     }

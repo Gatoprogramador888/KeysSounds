@@ -1,6 +1,6 @@
 #pragma once
 #include"Header.h"
-#include<Windows.h>
+#include<commdlg.h>
 #include"resource1.h"
 #include "IMusic.h"
 #include "SAVEMusic.h"
@@ -16,7 +16,7 @@ private:
 
     static std::wstring OpenFileDialog(HWND owner)
     {
-        OPENFILENAMEA ofn = {};
+        OPENFILENAME ofn = {};
         CHAR szFile[260] = {};
         ofn.lStructSize = sizeof(ofn);
         ofn.hwndOwner = owner;
@@ -56,13 +56,13 @@ public:
         listMusic.push_back(DIR{ wfile, index });
         //std::string file = SWStringToString(wfile);
 
-        HWND listBox = GetItem(LB_LMUSIC);//GetDlgItem(Dlg, LB_LMUSIC);
+        HWND listBox = GetDlgItem(Dlg, LB_LMUSIC);//GetDlgItem(Dlg, LB_LMUSIC);
         SendMessageW(listBox, LB_ADDSTRING, NULL, (LPARAM)wfile.c_str());
         SendMessageA(listBox, LB_SETITEMDATA, (WPARAM)index, (LPARAM) index);
 
         std::string msg = "Added " + SWStringToString(wfile) + " with index:" + std::to_string(index);
         MessageBox(NULL, msg.c_str(), "", MB_OK | MB_ICONINFORMATION);
-        SAVEMusic::Instance().SetSave();
+        SAVEMusic::Instance().SetSaved();
     }
 
     // Evitar copia

@@ -44,6 +44,7 @@ std::experimental::generator<std::wstring> SAVEMusic::SavesFile()
 
 void SAVEMusic::StartAsyncSave()
 {
+	SetWindowText(hbutton, "Save");
     saveFile = SavesFile();
     genSaveFileIt = saveFile.begin();
     saving = true;
@@ -53,7 +54,6 @@ void SAVEMusic::UpdateAsyncSave()
 {
 	if (!saving)
 	{
-		SetWindowText(hbutton, "Save");
 		return;
 	}
 

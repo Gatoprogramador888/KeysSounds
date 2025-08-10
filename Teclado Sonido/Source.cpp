@@ -9,21 +9,34 @@
 
 LRESULT CALLBACK DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
 
+constexpr int IDLOAD = 1;
+constexpr int IDSAVED = 2;
+constexpr int SLEEPTIMER = 50;
+
+void startLoad(HWND hMain)
+{
+    
+    LOADMusic::Instance().SetDialogParent(hMain);
+    LOADMusic::Instance().SetLBMusic(LB_LMUSIC);
+    LOADMusic::Instance().StartAsyncLoad();
+    SetTimer(hMain, IDLOAD, SLEEPTIMER, NULL);
+}
+
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, PSTR cmdLine, int cShow)
 {
     HWND hMain = CreateDialog(hInst, MAKEINTRESOURCE(IDD_DIALOG1), NULL, DlgProc);
 
-    LOADMusic::Instance().SetDialogHandle(hMain);
-    LOADMusic::Instance().AsyncLoad();
+    startLoad(hMain);
 
     MSG msg;
     ZeroMemory(&msg, sizeof(MSG));
     ShowWindow(hMain, SW_SHOW);
 
-    ADDMusic::Instance().SetDialogHandle(hMain);
-    ELIMusic::Instance().SetDialogHandle(hMain);
-    MODMusic::Instance().SetDialogHandle(hMain);
-    SAVEMusic::Instance().SetDialogHandle(hMain);
+    ADDMusic::Instance().SetDialogParent(hMain);
+    ELIMusic::Instance().SetDialogParent(hMain);
+    MODMusic::Instance().SetDialogParent(hMain);
+    SAVEMusic::Instance().SetDialogParent(hMain);
+    SAVEMusic::Instance().SetButtonHandle(BTN_SAVE);
 
     while (GetMessage(&msg, NULL, NULL, NULL))
     {
@@ -60,20 +73,29 @@ LRESULT CALLBACK DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
         if (LOWORD(wParam) == BTN_SAVE)
         {
-            SAVEMusic::Instance().AsyncSave();
+            SAVEMusic::Instance().StartAsyncSave();
+            SetTimer(hDlg, IDSAVED, SLEEPTIMER, NULL);
+            
         }
     }
     break;
     case WM_TIMER:
-        if (wParam == 1) // Id del timer
+        if (wParam == IDLOAD)
         {
-            LOADMusic::Instance().AsyncLoadTimer();
-            return TRUE;
+            LOADMusic::Instance().UpdateAsyncLoad();
+            if (LOADMusic::Instance().IsLoadDone())
+            {
+                KillTimer(hDlg, IDLOAD);
+            }
         }
-        if (wParam == 2) // Id del timer
+        if (wParam == IDSAVED)
         {
-            SAVEMusic::Instance().AsyncSaveTimer();
-            return TRUE;
+            SAVEMusic::Instance().UpdateAsyncSave();
+            if (SAVEMusic::Instance().IsSaveDone())
+            {
+                KillTimer(hDlg, IDSAVED);
+                MessageBox(hDlg, "Saving completed", "Saving", MB_OK);
+            }
         }
         break;
     case WM_CLOSE:

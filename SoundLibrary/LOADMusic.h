@@ -20,7 +20,7 @@ private:
 
     std::experimental::generator<std::wstring> LoadsFile();
 
-    int LB_LMUSIC;
+    int _listBoxMusic = 0;
 
 public:
     static LOADMusic& Instance();
@@ -29,7 +29,10 @@ public:
     void UpdateAsyncLoad();
     bool IsLoadDone() const;
 
-    void SetDialogHandle(const int& LB) { LB_LMUSIC = LB; }
+    void SetLBMusic(int LB) 
+    {
+        _listBoxMusic = LB; 
+    }
 
     LOADMusic(const LOADMusic&) = delete;
     LOADMusic& operator=(const LOADMusic&) = delete;

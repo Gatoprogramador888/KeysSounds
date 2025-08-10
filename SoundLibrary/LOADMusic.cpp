@@ -25,7 +25,7 @@ std::experimental::generator<std::wstring> LOADMusic::LoadsFile()
 
     std::wstring line;
 
-    HWND listBox = GetDlgItem(Dlg, LB_LMUSIC);
+    HWND listBox = GetDlgItem(Dlg, _listBoxMusic);
 
     while (std::getline(fileLoad, line))
     {

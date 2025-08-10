@@ -2,6 +2,7 @@
 #include "Header.h"
 #include "resource1.h"
 #include "IMusic.h"
+#include "SAVEMusic.h"
 #include <algorithm>
 
 class ELIMusic : public IMusic
@@ -18,7 +19,7 @@ public:
 
     void Eliminate()
     {
-        HWND listBox = GetItem(LB_LMUSIC);
+        HWND listBox = GetDlgItem(Dlg, LB_LMUSIC);
         LRESULT index = SendMessage(listBox, LB_GETCURSEL, NULL, NULL);
         LRESULT indexData = SendMessage(listBox, LB_GETITEMDATA, (WPARAM)index, NULL);
         DIR directory;
@@ -40,7 +41,7 @@ public:
         if (objectEliminate != listMusic.end()) {
             listMusic.erase(objectEliminate);
         }
-
+        SAVEMusic::Instance().SetSaved();
         std::string msgIndex = SWStringToString(directory.dir) + " was deleted";
         MessageBox(NULL, msgIndex.c_str(), "", MB_OK | MB_ICONINFORMATION);
     }

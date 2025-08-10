@@ -3,6 +3,7 @@
 #include "resource1.h"
 #include "IMusic.h"
 #include "SAVEMusic.h"
+#include<commdlg.h>
 
 class MODMusic : public IMusic
 {
@@ -42,7 +43,7 @@ public:
 
     void Modify()
     {
-        HWND listBox = GetItem(LB_LMUSIC);
+        HWND listBox = GetDlgItem(Dlg, LB_LMUSIC);
         LRESULT index = SendMessage(listBox, LB_GETCURSEL, NULL, NULL);
         LRESULT indexData = SendMessage(listBox, LB_GETITEMDATA, (WPARAM)index, NULL);
         try
@@ -70,7 +71,7 @@ public:
 
             std::string msg = "Modifies " + SWStringToString(wfile);
             MessageBox(NULL, msg.c_str(), "", MB_OK | MB_ICONINFORMATION);
-            SAVEMusic::Instance().SetSave();
+            SAVEMusic::Instance().SetSaved();
         }
         catch (const std::out_of_range& error)
         {
