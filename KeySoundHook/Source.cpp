@@ -33,6 +33,11 @@ VOID CALLBACK TimerQueueRoutine(PVOID lpParam, BOOLEAN TimerOrWaitFired)
     {
         DeleteTimerQueueTimer(NULL, hTimer, NULL);
         hTimer = nullptr;
+        if (listMusic.empty())
+        {
+            MessageBox(NULL, "Enter some sounds first", "", MB_OK | MB_ICONINFORMATION);
+            system("KeySoundEditor.exe");
+        }
         // Notifica fin de carga o setea flag
     }
 }
