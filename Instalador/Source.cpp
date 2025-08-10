@@ -1,7 +1,17 @@
+//winapi
 #include <windows.h>
+#include <shobjidl.h>
+#include <shlguid.h>
+#include <objbase.h>
+#include <strsafe.h>
+#include <ShlObj_core.h>
+//librerias estandar
 #include <string>
 #include <fstream>
 #include <filesystem>
+
+//#pragma comment(lib, "ole32.lib")
+//#pragma comment(lib, "shell32.lib")
 
 
 namespace fs = std::filesystem;
@@ -57,16 +67,81 @@ void CreateFileMusic()
     }
 }
 
+
+bool CrearAcessoDirectoDelEditor(LPCWSTR rutaObjeto, LPCWSTR rutaAccesoDirecto, LPCWSTR descripcion)
+{
+    HRESULT resultado;
+    bool exito = false;
+
+    // Inicializa la librería COM (obligatorio para usar interfaces COM)
+    resultado = CoInitialize(NULL);
+    if (SUCCEEDED(resultado))
+    {
+        IShellLinkW* punteroShellLink = nullptr;
+
+        // Crear instancia de IShellLink
+        resultado = CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER,
+            IID_IShellLinkW, (LPVOID*)&punteroShellLink);
+        if (SUCCEEDED(resultado))
+        {
+            IPersistFile* punteroPersistFile = nullptr;
+
+            // Define la ruta del ejecutable al que apunta el acceso directo
+            punteroShellLink->SetPath(rutaObjeto);
+
+            // Define descripción opcional del acceso directo
+            punteroShellLink->SetDescription(descripcion);
+
+            // Obtiene la interfaz para guardar el acceso directo en disco
+            resultado = punteroShellLink->QueryInterface(IID_IPersistFile, (void**)&punteroPersistFile);
+            if (SUCCEEDED(resultado))
+            {
+                // Guarda el acceso directo en la ruta especificada
+                resultado = punteroPersistFile->Save(rutaAccesoDirecto, TRUE);
+                punteroPersistFile->Release();
+                exito = SUCCEEDED(resultado);
+            }
+            punteroShellLink->Release();
+        }
+        CoUninitialize(); // Desinicializa COM
+    }
+    return exito;
+}
+
+
 int main()
 {
     wchar_t path[MAX_PATH];
     GetModuleFileNameW(NULL, path, MAX_PATH);
+    std::filesystem::path rutaCarpeta = std::filesystem::path(path).parent_path();
 
+    std::wstring rutaEjecutable = rutaCarpeta / L"KeySoundHook.exe";
+
+    //INICIAR A KEYSOUNDHOOK 
     if (AddToStartup(L"KeySoundHook", path))
         MessageBoxW(NULL, L"Added to start", L"OK", MB_OK);
     else
         MessageBoxW(NULL, L"Could not add to start", L"Error", MB_OK | MB_ICONERROR);
 
+    //CREAR ACCESO DIRECTO DEL EDITOR
+    WCHAR rutaEscritorio[MAX_PATH];
+    HRESULT resultado = SHGetFolderPathW(NULL, CSIDL_DESKTOPDIRECTORY, NULL, 0, rutaEscritorio);
+    if (FAILED(resultado))
+    {
+        MessageBox(NULL, "Could not get desktop path.", "Error", MB_OK | MB_ICONERROR);
+        return 1;
+    }
+
+    WCHAR rutaAccesoDirecto[MAX_PATH];
+    StringCchPrintfW(rutaAccesoDirecto, MAX_PATH, L"%s\\KeySoundEditor.lnk", rutaEscritorio);
+
+    if (!CrearAcessoDirectoDelEditor(rutaEjecutable.c_str(), rutaAccesoDirecto, L"Direct access to KeySoundHook"))
+    {
+        MessageBox(NULL, "The shortcut could not be created.", "Error", MB_OK | MB_ICONERROR);
+    }
+
+
+    //CREAR ARCHIVOS 
     CreateFileMusic();
 
     return 0;
