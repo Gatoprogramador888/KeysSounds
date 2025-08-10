@@ -3,8 +3,7 @@
 #include<Windows.h>
 #include"resource1.h"
 #include "IMusic.h"
-#include <locale> // For std::wstring_convert and std::codecvt_utf8
-#include <codecvt> // For std::codecvt_utf8
+#include "SAVEMusic.h"
 
 
 class ADDMusic : public IMusic
@@ -28,7 +27,7 @@ private:
         ofn.lpstrFileTitle = nullptr;
         ofn.nMaxFileTitle = 0;
         ofn.lpstrInitialDir = nullptr;
-        ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+        ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 
         if (GetOpenFileNameA(&ofn)) {
             std::string file(ofn.lpstrFile);
@@ -55,14 +54,15 @@ public:
 
         index = listMusic.size();
         listMusic.push_back(DIR{ wfile, index });
-        std::string file = SWStringToString(wfile);
+        //std::string file = SWStringToString(wfile);
 
         HWND listBox = GetItem(LB_LMUSIC);//GetDlgItem(Dlg, LB_LMUSIC);
-        SendMessageA(listBox, LB_ADDSTRING, NULL, (LPARAM)file.c_str());
+        SendMessageW(listBox, LB_ADDSTRING, NULL, (LPARAM)wfile.c_str());
         SendMessageA(listBox, LB_SETITEMDATA, (WPARAM)index, (LPARAM) index);
 
         std::string msg = "Added " + SWStringToString(wfile) + " with index:" + std::to_string(index);
         MessageBox(NULL, msg.c_str(), "", MB_OK | MB_ICONINFORMATION);
+        SAVEMusic::Instance().SetSave();
     }
 
     // Evitar copia

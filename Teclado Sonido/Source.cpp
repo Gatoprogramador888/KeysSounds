@@ -4,6 +4,7 @@
 #include "ELIMusic.h"
 #include "MODMusic.h"
 #include "SAVEMusic.h"
+#include "LOADMusic.h"
 #include <Windows.h>
 
 LRESULT CALLBACK DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
@@ -11,6 +12,10 @@ LRESULT CALLBACK DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, PSTR cmdLine, int cShow)
 {
     HWND hMain = CreateDialog(hInst, MAKEINTRESOURCE(IDD_DIALOG1), NULL, DlgProc);
+
+    LOADMusic::Instance().SetDialogHandle(hMain);
+    LOADMusic::Instance().AsyncLoad();
+
     MSG msg;
     ZeroMemory(&msg, sizeof(MSG));
     ShowWindow(hMain, SW_SHOW);
@@ -55,10 +60,22 @@ LRESULT CALLBACK DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
         if (LOWORD(wParam) == BTN_SAVE)
         {
-            SAVEMusic::Instance().Save();
+            SAVEMusic::Instance().AsyncSave();
         }
     }
     break;
+    case WM_TIMER:
+        if (wParam == 1) // Id del timer
+        {
+            LOADMusic::Instance().AsyncLoadTimer();
+            return TRUE;
+        }
+        if (wParam == 2) // Id del timer
+        {
+            SAVEMusic::Instance().AsyncSaveTimer();
+            return TRUE;
+        }
+        break;
     case WM_CLOSE:
         DestroyWindow(hDlg);
         break;

@@ -2,6 +2,7 @@
 #include "Header.h"
 #include "resource1.h"
 #include "IMusic.h"
+#include "SAVEMusic.h"
 
 class MODMusic : public IMusic
 {
@@ -21,7 +22,7 @@ private:
         ofn.lpstrFileTitle = nullptr;
         ofn.nMaxFileTitle = 0;
         ofn.lpstrInitialDir = nullptr;
-        ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+        ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 
         if (GetOpenFileNameA(&ofn)) {
             std::string file(ofn.lpstrFile);
@@ -42,11 +43,11 @@ public:
     void Modify()
     {
         HWND listBox = GetItem(LB_LMUSIC);
-        int index = SendMessage(listBox, LB_GETCURSEL, NULL, NULL);
-        int indexData = SendMessage(listBox, LB_GETITEMDATA, (WPARAM)index, NULL);
+        LRESULT index = SendMessage(listBox, LB_GETCURSEL, NULL, NULL);
+        LRESULT indexData = SendMessage(listBox, LB_GETITEMDATA, (WPARAM)index, NULL);
         try
         {
-            DIR directory = listMusic.at(indexData);
+            DIR directory = listMusic.at((int)indexData);
             std::string msgModify = "Do you want to modify " + SWStringToString(directory.dir) + "?";
             int decision = MessageBox(NULL, msgModify.c_str(), "Modify", MB_YESNO | MB_ICONWARNING);
 
@@ -62,14 +63,14 @@ public:
             directory.dir = wfile;
             listMusic.at(indexData) = directory;
 
-            std::string file = SWStringToString(wfile);
+            //std::string file = SWStringToString(wfile);
 
-            SendMessageA(listBox, LB_ADDSTRING, NULL, (LPARAM)file.c_str());
+            SendMessageW(listBox, LB_ADDSTRING, NULL, (LPARAM)wfile.c_str());
             SendMessageA(listBox, LB_SETITEMDATA, (WPARAM)indexData, (LPARAM)indexData);
 
             std::string msg = "Modifies " + SWStringToString(wfile);
             MessageBox(NULL, msg.c_str(), "", MB_OK | MB_ICONINFORMATION);
-
+            SAVEMusic::Instance().SetSave();
         }
         catch (const std::out_of_range& error)
         {

@@ -19,12 +19,12 @@ public:
     void Eliminate()
     {
         HWND listBox = GetItem(LB_LMUSIC);
-        int index = SendMessage(listBox, LB_GETCURSEL, NULL, NULL);
-        int indexData = SendMessage(listBox, LB_GETITEMDATA, (WPARAM)index, NULL);
+        LRESULT index = SendMessage(listBox, LB_GETCURSEL, NULL, NULL);
+        LRESULT indexData = SendMessage(listBox, LB_GETITEMDATA, (WPARAM)index, NULL);
         DIR directory;
         try
         {
-            directory = listMusic.at(indexData);
+            directory = listMusic.at((int)indexData);
         }
         catch (const std::out_of_range& error)
         {
