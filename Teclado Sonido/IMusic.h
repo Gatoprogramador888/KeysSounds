@@ -8,6 +8,7 @@ class IMusic
 protected:
     HWND Dlg = nullptr;
 
+
     virtual HWND GetItem(const int& item) final
     {
         return GetDlgItem(Dlg, item);

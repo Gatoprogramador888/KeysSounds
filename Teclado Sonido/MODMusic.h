@@ -8,7 +8,7 @@ class MODMusic : public IMusic
 private:
     MODMusic() = default;
 
-    static std::string OpenFileDialog(HWND owner)
+    static std::wstring OpenFileDialog(HWND owner)
     {
         OPENFILENAMEA ofn = {};
         CHAR szFile[260] = {};
@@ -24,10 +24,13 @@ private:
         ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
         if (GetOpenFileNameA(&ofn)) {
-            return std::string(ofn.lpstrFile);
+            std::string file(ofn.lpstrFile);
+            std::wstring wfile = SStringToWString(file);
+            return wfile;
         }
-        return ""; // vacío si cancelado
+        return std::wstring(); // vacío si cancelado
     }
+
 
 public:
     static MODMusic& Instance()
@@ -44,26 +47,27 @@ public:
         try
         {
             DIR directory = listMusic.at(indexData);
-            std::string msgModify = "Do you want to modify " + directory.dir + "?";
+            std::string msgModify = "Do you want to modify " + SWStringToString(directory.dir) + "?";
             int decision = MessageBox(NULL, msgModify.c_str(), "Modify", MB_YESNO | MB_ICONWARNING);
 
             if (decision == IDNO)return;
 
-            std::string file = OpenFileDialog(Dlg);
-            if (file.empty()) {
+            std::wstring wfile = OpenFileDialog(Dlg);
+            if (wfile.empty()) {
                 std::cout << "Diálogo cancelado o error." << std::endl;
                 return;
             }
 
             SendMessage(listBox, LB_DELETESTRING, (WPARAM)indexData, NULL);
-            directory.dir = file;
-
+            directory.dir = wfile;
             listMusic.at(indexData) = directory;
+
+            std::string file = SWStringToString(wfile);
 
             SendMessageA(listBox, LB_ADDSTRING, NULL, (LPARAM)file.c_str());
             SendMessageA(listBox, LB_SETITEMDATA, (WPARAM)indexData, (LPARAM)indexData);
 
-            std::string msg = "Modifies " + file;
+            std::string msg = "Modifies " + SWStringToString(wfile);
             MessageBox(NULL, msg.c_str(), "", MB_OK | MB_ICONINFORMATION);
 
         }

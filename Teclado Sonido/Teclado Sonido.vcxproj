@@ -117,6 +117,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -145,7 +146,9 @@
     <ClCompile Include="ELIMusic.cpp" />
     <ClCompile Include="Header.cpp" />
     <ClCompile Include="IMusic.cpp" />
+    <ClCompile Include="LOADMusic.cpp" />
     <ClCompile Include="MODMusic.cpp" />
+    <ClCompile Include="SAVEMusic.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -153,8 +156,10 @@
     <ClInclude Include="ELIMusic.h" />
     <ClInclude Include="Header.h" />
     <ClInclude Include="IMusic.h" />
+    <ClInclude Include="LOADMusic.h" />
     <ClInclude Include="MODMusic.h" />
     <ClInclude Include="resource1.h" />
+    <ClInclude Include="SAVEMusic.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Referencia.png" />

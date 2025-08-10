@@ -6,6 +6,7 @@
 #define BTN_ADD                         1001
 #define BTN_ELI                         1002
 #define BTN_MOD                         1003
+#define BTN_SAVE                        1004
 #define LB_LMUSIC                       1008
 
 // Next default values for new objects

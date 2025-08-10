@@ -3,6 +3,7 @@
 #include "ADDMusic.h"
 #include "ELIMusic.h"
 #include "MODMusic.h"
+#include "SAVEMusic.h"
 #include <Windows.h>
 
 LRESULT CALLBACK DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
@@ -17,13 +18,13 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, PSTR cmdLine, int cShow)
     ADDMusic::Instance().SetDialogHandle(hMain);
     ELIMusic::Instance().SetDialogHandle(hMain);
     MODMusic::Instance().SetDialogHandle(hMain);
+    SAVEMusic::Instance().SetDialogHandle(hMain);
 
     while (GetMessage(&msg, NULL, NULL, NULL))
     {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
-
     return 0;
 }
 
@@ -50,6 +51,11 @@ LRESULT CALLBACK DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         if (LOWORD(wParam) == BTN_MOD)
         {
             MODMusic::Instance().Modify();
+        }
+
+        if (LOWORD(wParam) == BTN_SAVE)
+        {
+            SAVEMusic::Instance().Save();
         }
     }
     break;

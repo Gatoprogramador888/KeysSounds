@@ -3,6 +3,8 @@
 #include<Windows.h>
 #include"resource1.h"
 #include "IMusic.h"
+#include <locale> // For std::wstring_convert and std::codecvt_utf8
+#include <codecvt> // For std::codecvt_utf8
 
 
 class ADDMusic : public IMusic
@@ -13,7 +15,7 @@ private:
 
     ADDMusic() = default; // Constructor privado para singleton
 
-    static std::string OpenFileDialog(HWND owner)
+    static std::wstring OpenFileDialog(HWND owner)
     {
         OPENFILENAMEA ofn = {};
         CHAR szFile[260] = {};
@@ -29,9 +31,11 @@ private:
         ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
         if (GetOpenFileNameA(&ofn)) {
-            return std::string(ofn.lpstrFile);
+            std::string file(ofn.lpstrFile);
+            std::wstring wfile = SStringToWString(file);
+            return wfile;
         }
-        return ""; // vacío si cancelado
+        return std::wstring(); // vacío si cancelado
     }
 
 public:
@@ -43,19 +47,21 @@ public:
 
     void Add()
     {
-        std::string file = OpenFileDialog(Dlg);
-        if (file.empty()) {
+        std::wstring wfile = OpenFileDialog(Dlg);
+        if (wfile.empty()) {
             std::cout << "Diálogo cancelado o error." << std::endl;
             return;
         }
 
         index = listMusic.size();
-        listMusic.push_back(DIR{ file, index });
+        listMusic.push_back(DIR{ wfile, index });
+        std::string file = SWStringToString(wfile);
 
         HWND listBox = GetItem(LB_LMUSIC);//GetDlgItem(Dlg, LB_LMUSIC);
         SendMessageA(listBox, LB_ADDSTRING, NULL, (LPARAM)file.c_str());
         SendMessageA(listBox, LB_SETITEMDATA, (WPARAM)index, (LPARAM) index);
-        std::string msg = "Added " + file + " with index:" + std::to_string(index);
+
+        std::string msg = "Added " + SWStringToString(wfile) + " with index:" + std::to_string(index);
         MessageBox(NULL, msg.c_str(), "", MB_OK | MB_ICONINFORMATION);
     }
 
