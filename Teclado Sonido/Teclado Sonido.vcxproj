@@ -118,11 +118,14 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>C:\Users\gatob\source\repos\Teclado Sonido\SoundLibrary;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EntryPointSymbol>WinMainCRTStartup</EntryPointSymbol>
+      <AdditionalDependencies>C:\Users\gatob\source\repos\Teclado Sonido\x64\Debug\SoundLibrary.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\gatob\source\repos\Teclado Sonido\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -144,22 +147,14 @@
   <ItemGroup>
     <ClCompile Include="ADDMusic.cpp" />
     <ClCompile Include="ELIMusic.cpp" />
-    <ClCompile Include="Header.cpp" />
-    <ClCompile Include="IMusic.cpp" />
-    <ClCompile Include="LOADMusic.cpp" />
     <ClCompile Include="MODMusic.cpp" />
-    <ClCompile Include="SAVEMusic.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ADDMusic.h" />
     <ClInclude Include="ELIMusic.h" />
-    <ClInclude Include="Header.h" />
-    <ClInclude Include="IMusic.h" />
-    <ClInclude Include="LOADMusic.h" />
     <ClInclude Include="MODMusic.h" />
     <ClInclude Include="resource1.h" />
-    <ClInclude Include="SAVEMusic.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Referencia.png" />
