@@ -1,5 +1,8 @@
 #include "Header.h"
 #include "SoundSystem.h"
+#include <windows.h>
+#include <mmsystem.h>
+#include "LOADMusic.h"
 
 // Hook global
 HHOOK hHook = NULL;
@@ -10,23 +13,44 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
         KBDLLHOOKSTRUCT* pKey = (KBDLLHOOKSTRUCT*)lParam;
 
         if (wParam == WM_KEYDOWN) {
-            // Ejemplo: reproducir un sonido al presionar la tecla "A"
-            if (pKey->vkCode == 0x41) { // 0x41 = 'A'
-                Sound::Instance().Play(L"C:\\ruta\\sonido.wav");
-            }
+            Sound::Instance().Play(Sound::Instance().RandomSound());
         }
     }
     return CallNextHookEx(hHook, nCode, wParam, lParam);
 }
 
-// Punto de entrada WinAPI
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
-    MSG msg;
 
+//Timer
+HANDLE hTimer = nullptr;
+
+constexpr int DURATION = 50;
+
+VOID CALLBACK TimerQueueRoutine(PVOID lpParam, BOOLEAN TimerOrWaitFired)
+{
+    LOADMusic::Instance().UpdateAsyncLoad();
+
+    if (LOADMusic::Instance().IsLoadDone())
+    {
+        DeleteTimerQueueTimer(NULL, hTimer, NULL);
+        hTimer = nullptr;
+        // Notifica fin de carga o setea flag
+    }
+}
+
+void StartAsyncLoadTimer()
+{
+    LOADMusic::Instance().StartAsyncLoad();
+    CreateTimerQueueTimer(&hTimer, NULL, TimerQueueRoutine, nullptr, NULL, DURATION, NULL);
+}
+
+// Punto de entrada WinAPI
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hprev, LPSTR lpstr, int cshow) {
+    MSG msg;
+    StartAsyncLoadTimer();
     // Instalar hook
     hHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, hInstance, 0);
     if (!hHook) {
-        //MessageBox(NULL, L"No se pudo instalar el hook", L"Error", MB_ICONERROR);
+        MessageBoxW(NULL, L"No se pudo instalar el hook", L"Error", MB_ICONERROR);
         return -1;
     }
 

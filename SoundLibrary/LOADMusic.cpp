@@ -29,8 +29,11 @@ std::experimental::generator<std::wstring> LOADMusic::LoadsFile()
 
     while (std::getline(fileLoad, line))
     {
-        SendMessageW(listBox, LB_ADDSTRING, 0, (LPARAM)line.c_str());
-        SendMessageA(listBox, LB_SETITEMDATA, (WPARAM)index, (LPARAM)index);
+        if (listBox)
+        {
+            SendMessageW(listBox, LB_ADDSTRING, 0, (LPARAM)line.c_str());
+            SendMessageA(listBox, LB_SETITEMDATA, (WPARAM)index, (LPARAM)index);
+        }
 
         DIR directory;
         directory.dir = line;

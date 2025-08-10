@@ -1,10 +1,9 @@
 #pragma once
 #include"Header.h"
-#include<filesystem>
-#include<experimental/generator>
-#include<vector>
+#include <mmsystem.h>
+#include <random>
+#include<Windows.h>
 
-namespace fs = std::filesystem;
 
 class Sound {
 private:
@@ -20,13 +19,15 @@ private:
         return strTo;
     }
 
-
-
 public:
     static Sound& Instance() {
         static Sound instance;
         return instance;
     }
+
+
+    std::wstring RandomSound();
+    
 
     void Play(const std::wstring& file) {
         PlaySound(wstring_to_lpstr(file), NULL, SND_FILENAME | SND_ASYNC);
