@@ -17,5 +17,6 @@
 #include <string_view>
 #include <Windows.h>
 #include <vector>
+#include <commdlg.h>
 
 #endif //PCH_H

@@ -10,7 +10,12 @@
 struct DIR
 {
     std::wstring dir;
-    size_t index = 1;
+    size_t index = 0;
+
+    bool Empty()
+    {
+        return (dir.empty() && index == NULL);
+    }
 
     bool operator==(const DIR& other) const
     {
@@ -52,4 +57,53 @@ static std::string SWStringToString(const std::wstring& wstr)
     std::string strTo(sizeNeeded, 0);
     WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), &strTo[0], sizeNeeded, NULL, NULL);
     return strTo;
+}
+
+
+//OPENFILENAME
+
+static std::wstring OpenFileDialog()
+{
+    OPENFILENAME ofn = {};
+    CHAR szFile[260] = {};
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = NULL;
+    ofn.lpstrFile = szFile;
+    ofn.nMaxFile = sizeof(szFile);
+    ofn.lpstrFilter = "Archivos de Música\0*.wav\0Todos los archivos\0*.*\0";
+    ofn.nFilterIndex = 1;
+    ofn.lpstrFileTitle = nullptr;
+    ofn.nMaxFileTitle = 0;
+    ofn.lpstrInitialDir = nullptr;
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+
+    if (GetOpenFileNameA(&ofn)) {
+        std::string file(ofn.lpstrFile);
+        std::wstring wfile = SStringToWString(file);
+        return wfile;
+    }
+    return std::wstring(); // vacío si cancelado
+}
+
+static std::wstring OpenFileDialog(HWND hwnd)
+{
+    OPENFILENAME ofn = {};
+    CHAR szFile[260] = {};
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = hwnd;
+    ofn.lpstrFile = szFile;
+    ofn.nMaxFile = sizeof(szFile);
+    ofn.lpstrFilter = "Archivos de Música\0*.wav\0Todos los archivos\0*.*\0";
+    ofn.nFilterIndex = 1;
+    ofn.lpstrFileTitle = nullptr;
+    ofn.nMaxFileTitle = 0;
+    ofn.lpstrInitialDir = nullptr;
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+
+    if (GetOpenFileNameA(&ofn)) {
+        std::string file(ofn.lpstrFile);
+        std::wstring wfile = SStringToWString(file);
+        return wfile;
+    }
+    return std::wstring(); // vacío si cancelado
 }

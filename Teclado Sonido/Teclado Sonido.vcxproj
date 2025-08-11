@@ -149,12 +149,14 @@
     <ClCompile Include="ELIMusic.cpp" />
     <ClCompile Include="MODMusic.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ADDMusic.h" />
     <ClInclude Include="ELIMusic.h" />
     <ClInclude Include="MODMusic.h" />
     <ClInclude Include="resource1.h" />
+    <ClInclude Include="UI.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Referencia.png" />

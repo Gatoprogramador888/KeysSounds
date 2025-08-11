@@ -1,4 +1,2 @@
-C:\Users\gatob\Downloads\WhatsApp-Audio-2025-01-22-at-12.11.28-PM.wav
-C:\Users\gatob\Downloads\mouse-click-117076.wav
+C:\Users\gatob\source\repos\Teclado Sonido\x64\Debug\Music\2025_08_10_15_53_19 (mp3cut.net) (1).wav
 C:\Users\gatob\Downloads\Sonido_Menu.wav
-C:\Users\gatob\Downloads\WhatsApp-Audio-2025-01-22-at-12.11.28-PM.wav

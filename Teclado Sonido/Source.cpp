@@ -6,6 +6,7 @@
 #include "SAVEMusic.h"
 #include "LOADMusic.h"
 #include <Windows.h>
+#include "UI.h"
 
 LRESULT CALLBACK DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -15,28 +16,28 @@ constexpr int SLEEPTIMER = 50;
 
 void startLoad(HWND hMain)
 {
-    
-    LOADMusic::Instance().SetDialogParent(hMain);
-    LOADMusic::Instance().SetLBMusic(LB_LMUSIC);
     LOADMusic::Instance().StartAsyncLoad();
     SetTimer(hMain, IDLOAD, SLEEPTIMER, NULL);
+}
+
+void StartUI(HWND hMain)
+{
+    HWND hListBox = GetDlgItem(hMain, LB_LMUSIC);
+    UIListBox::Instance().SethObject(hListBox);
+
+    HWND hButtonSaved = GetDlgItem(hMain, BTN_SAVE);
+    UIButtonSaved::Instance().SethObject(hButtonSaved);
 }
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, PSTR cmdLine, int cShow)
 {
     HWND hMain = CreateDialog(hInst, MAKEINTRESOURCE(IDD_DIALOG1), NULL, DlgProc);
-
     startLoad(hMain);
-
+    StartUI(hMain);
     MSG msg;
     ZeroMemory(&msg, sizeof(MSG));
     ShowWindow(hMain, SW_SHOW);
 
-    ADDMusic::Instance().SetDialogParent(hMain);
-    ELIMusic::Instance().SetDialogParent(hMain);
-    MODMusic::Instance().SetDialogParent(hMain);
-    SAVEMusic::Instance().SetDialogParent(hMain);
-    SAVEMusic::Instance().SetButtonHandle(BTN_SAVE);
 
     while (GetMessage(&msg, NULL, NULL, NULL))
     {
@@ -58,23 +59,42 @@ LRESULT CALLBACK DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     {
         if (LOWORD(wParam) == BTN_ADD)
         {
-            ADDMusic::Instance().Add();
+
+            DIR add = ADDMusic::Instance().Add();
+
+            if(!add.Empty())
+                UIListBox::Instance().SetItem(add);
+
+            UIButtonSaved::Instance().SetButtonNotSaved();
         }
 
         if (LOWORD(wParam) == BTN_ELI)
         {
-            ELIMusic::Instance().Eliminate();
+            int index = UIListBox::Instance().GetItemSelect();
+            ELIMusic::Instance().Eliminate(index);
+            UIListBox::Instance().DeleteItem(index);
+
+            UIButtonSaved::Instance().SetButtonNotSaved();
         }
 
         if (LOWORD(wParam) == BTN_MOD)
         {
-            MODMusic::Instance().Modify();
+            int index = UIListBox::Instance().GetItemSelect();
+            UIListBox::Instance().DeleteItem(index);
+            DIR mod = MODMusic::Instance().Modify(index);
+
+            if (!mod.Empty())
+                UIListBox::Instance().SetItem(mod);
+
+            UIButtonSaved::Instance().SetButtonNotSaved();
         }
 
         if (LOWORD(wParam) == BTN_SAVE)
         {
             SAVEMusic::Instance().StartAsyncSave();
             SetTimer(hDlg, IDSAVED, SLEEPTIMER, NULL);
+
+            UIButtonSaved::Instance().SetButtonYesSaved();
             
         }
     }
@@ -85,6 +105,7 @@ LRESULT CALLBACK DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             LOADMusic::Instance().UpdateAsyncLoad();
             if (LOADMusic::Instance().IsLoadDone())
             {
+                UIListBox::Instance().Load();
                 KillTimer(hDlg, IDLOAD);
             }
         }

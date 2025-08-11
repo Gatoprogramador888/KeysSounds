@@ -6,13 +6,6 @@
 namespace fs = std::filesystem;
 
 
-
-void SAVEMusic::SetButtonHandle(const int& hb)
-{
-	hbutton = GetDlgItem(Dlg, hb);
-}
-
-
 std::experimental::generator<std::wstring> SAVEMusic::SavesFile()
 {
 	fs::path currentPath = fs::current_path();
@@ -44,7 +37,6 @@ std::experimental::generator<std::wstring> SAVEMusic::SavesFile()
 
 void SAVEMusic::StartAsyncSave()
 {
-	SetWindowText(hbutton, "Save");
     saveFile = SavesFile();
     genSaveFileIt = saveFile.begin();
     saving = true;

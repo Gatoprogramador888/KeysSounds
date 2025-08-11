@@ -1,5 +1,4 @@
 #pragma once
-#include "IMusic.h"
 #include "Header.h"
 #include <experimental/generator>
 
@@ -9,7 +8,7 @@
 #define MUSIC_API __declspec(dllimport)
 #endif
 
-class MUSIC_API LOADMusic : public IMusic
+class MUSIC_API LOADMusic
 {
 private:
     LOADMusic() = default;
@@ -20,19 +19,12 @@ private:
 
     std::experimental::generator<std::wstring> LoadsFile();
 
-    int _listBoxMusic = 0;
-
 public:
     static LOADMusic& Instance();
 
     void StartAsyncLoad();
     void UpdateAsyncLoad();
     bool IsLoadDone() const;
-
-    void SetLBMusic(int LB) 
-    {
-        _listBoxMusic = LB; 
-    }
 
     LOADMusic(const LOADMusic&) = delete;
     LOADMusic& operator=(const LOADMusic&) = delete;

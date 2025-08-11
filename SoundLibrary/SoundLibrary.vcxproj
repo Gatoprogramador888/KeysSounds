@@ -156,7 +156,6 @@
   <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="Header.h" />
-    <ClInclude Include="IMusic.h" />
     <ClInclude Include="LOADMusic.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SAVEMusic.h" />
@@ -164,7 +163,6 @@
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Header.cpp" />
-    <ClCompile Include="IMusic.cpp" />
     <ClCompile Include="LOADMusic.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

@@ -1,5 +1,4 @@
 #pragma once
-#include "IMusic.h"
 #include "Header.h"
 #include <experimental/generator>
 
@@ -9,10 +8,9 @@
 #define MUSIC_API __declspec(dllimport)
 #endif
 
-class MUSIC_API SAVEMusic : public IMusic
+class MUSIC_API SAVEMusic
 {
 private:
-    HWND hbutton = nullptr;
 
     std::experimental::generator<std::wstring> saveFile;
     std::experimental::generator<std::wstring>::iterator genSaveFileIt;
@@ -26,8 +24,6 @@ public:
         static SAVEMusic instance;
         return instance;
     }
-    void SetButtonHandle(const int& hb);
-    void SetSaved(){ SetWindowText(hbutton, "SAVE*"); }
 
     void StartAsyncSave();
     void UpdateAsyncSave();

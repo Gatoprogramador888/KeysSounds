@@ -25,15 +25,8 @@ std::experimental::generator<std::wstring> LOADMusic::LoadsFile()
 
     std::wstring line;
 
-    HWND listBox = GetDlgItem(Dlg, _listBoxMusic);
-
     while (std::getline(fileLoad, line))
     {
-        if (listBox)
-        {
-            SendMessageW(listBox, LB_ADDSTRING, 0, (LPARAM)line.c_str());
-            SendMessageA(listBox, LB_SETITEMDATA, (WPARAM)index, (LPARAM)index);
-        }
 
         DIR directory;
         directory.dir = line;
@@ -64,7 +57,7 @@ void LOADMusic::UpdateAsyncLoad()
     {
         loading = false;
         loadFile = std::experimental::generator<std::wstring>(); // reset generator
-        KillTimer(Dlg, 1);
+        //KillTimer(Dlg, 1);
         return;
     }
 
