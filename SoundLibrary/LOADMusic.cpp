@@ -50,6 +50,7 @@ void LOADMusic::StartAsyncLoad()
 
 void LOADMusic::UpdateAsyncLoad()
 {
+   // MessageBox(NULL, "Actualizando", "info", MB_OK);
     if (!loading)
         return;
 
@@ -57,7 +58,6 @@ void LOADMusic::UpdateAsyncLoad()
     {
         loading = false;
         loadFile = std::experimental::generator<std::wstring>(); // reset generator
-        //KillTimer(Dlg, 1);
         return;
     }
 
