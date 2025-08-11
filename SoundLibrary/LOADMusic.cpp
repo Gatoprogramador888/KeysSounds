@@ -50,7 +50,6 @@ void LOADMusic::StartAsyncLoad()
 
 void LOADMusic::UpdateAsyncLoad()
 {
-   // MessageBox(NULL, "Actualizando", "info", MB_OK);
     if (!loading)
         return;
 

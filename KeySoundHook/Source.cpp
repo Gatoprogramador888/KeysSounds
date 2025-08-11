@@ -33,7 +33,6 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
             }
 
             if ((keysPressed.count(VK_LCONTROL) || keysPressed.count(VK_RCONTROL)) && keysPressed.count(VK_E)) {
-                MessageBox(NULL, "closing Key Sound", "Info", MB_OK | MB_ICONINFORMATION);
                 PostQuitMessage(0);
             }
         }
@@ -88,11 +87,12 @@ VOID CALLBACK TimerQueueRoutine(PVOID lpParam, BOOLEAN TimerOrWaitFired)
         
         if (listMusic.empty())
         {
-            system("KeySoundEditor.exe");
             MessageBox(NULL, "Enter some sounds first", "", MB_OK | MB_ICONINFORMATION);
             std::exit(0);
+            system("KeySoundEditor.exe");
         }
         // Notifica fin de carga o setea flag
+        std::string msg = std::to_string(listMusic.size() - 1) + " sounds were loaded";
     }
 }
 
@@ -166,5 +166,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hprev, LPSTR lpstr, int cshow)
 
     UnhookWindowsHookEx(hHook);
     CloseHandle(hStopEvent);
+
+    MessageBox(NULL, "closing Key Sound", "Info", MB_OK | MB_ICONINFORMATION);
+
     return 0;
 }
