@@ -3,6 +3,8 @@
 #include "WrapperDIR.h"
 #include "SavedWrapper.h"
 #include <string>
+#include <filesystem>
+#include <vector>
 
 namespace KeySoundEditor {
 
@@ -12,6 +14,7 @@ namespace KeySoundEditor {
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
+	namespace fs = std::filesystem;
 
 	/// <summary>
 	/// Resumen de Editor
@@ -52,8 +55,9 @@ namespace KeySoundEditor {
 	private: System::Windows::Forms::Button^ BTN_ADDCO;
 	private: System::Windows::Forms::Button^ BTN_DELCON;
 	private: System::Windows::Forms::Timer^ loadTimer;
-	private: System::Windows::Forms::Timer^ SavedTimer;
-	private: System::Windows::Forms::OpenFileDialog^ SearchSound;
+	private: System::Windows::Forms::Timer^ savedTimer;
+	private: System::Windows::Forms::OpenFileDialog^ searchSound;
+	private: System::Windows::Forms::FolderBrowserDialog^ searchFolder;
 
 	//protected:
 
@@ -84,7 +88,7 @@ namespace KeySoundEditor {
 		/// </summary>
 		void InitializeComponent(void)
 		{
-			this->SearchSound = (gcnew System::Windows::Forms::OpenFileDialog());
+			this->searchSound = (gcnew System::Windows::Forms::OpenFileDialog());
 			this->ListMusic = (gcnew System::Windows::Forms::ListBox());
 			this->panel1 = (gcnew System::Windows::Forms::Panel());
 			this->label1 = (gcnew System::Windows::Forms::Label());
@@ -278,9 +282,16 @@ namespace KeySoundEditor {
 			//
 			//OFN
 			//
-			SearchSound->Filter = "sound file (*.wav)|*.wav";
-			SearchSound->FilterIndex = 1;
-			SearchSound->RestoreDirectory = true;
+			searchSound->Filter = "sound file (*.wav)|*.wav";
+			searchSound->FilterIndex = 1;
+			searchSound->RestoreDirectory = true;
+			//
+			//FBD
+			//
+			searchFolder = gcnew System::Windows::Forms::FolderBrowserDialog();
+			searchFolder->Description = "sounds folder";
+			searchFolder->ShowNewFolderButton = false;
+
 
 		}
 #pragma endregion
@@ -288,53 +299,66 @@ namespace KeySoundEditor {
 			//Buttons
 		private: System::Void BTN_SAVED_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
+
 			int timeSleep = 50;
-			SavedTimer = gcnew System::Windows::Forms::Timer();
-			SavedTimer->Interval = timeSleep; // milisegundos (0.5 seg)
-			SavedTimer->Tick += gcnew System::EventHandler(this, &Editor::OnSavedTick);
-			SavedTimer->Start();
+			savedTimer = gcnew System::Windows::Forms::Timer();
+			savedTimer->Interval = timeSleep; // milisegundos (0.5 seg)
+			savedTimer->Tick += gcnew System::EventHandler(this, &Editor::OnSavedTick);
+			savedTimer->Start();
 		}
 
-		private: System::Void BTN_ACCEPT_Click(System::Object^ sender, System::EventArgs^ e) {
+		private: System::Void BTN_ACCEPT_Click(System::Object^ sender, System::EventArgs^ e) 
+		{
 		}
 
 		private: System::Void BTN_RF_Click(System::Object^ sender, System::EventArgs^ e)
 		{
+			ReadFolderConvertToWav();
+			MessageBox::Show("Reading of the folder is finished");
+			BTN_SAVED->Text = "SAVED*";
 		}
+
 		private: System::Void BTN_ADD_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
 			System::String^ file = OFN();
+
+			if (FolderOrSoundIsEmpty(file))return;
+
 			ListMusic->Items->Add(file);
+			BTN_SAVED->Text = "SAVED*";
 		}
 
 		private: System::Void BTN_DELETE_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
-			System::String^ itemName = ListMusic->SelectedItem->ToString();
-
-			if (IsRemove(System::String::Format("Do you want to delete {0} ? ", itemName)) == NULL)return;
+			if (IsRemove("Do you want to delete?") == -1)return;
 		}
 
 		private: System::Void BTN_MODIFY_Click(System::Object^ sender, System::EventArgs^ e)
 		{
-			System::String^ itemName = ListMusic->SelectedItem->ToString();
 			
-			int index = IsRemove(System::String::Format("Do you want to modify {0} ? ", itemName));
+			int index = IsRemove("Do you want to modify?");
 
-			if (index == NULL)return;
+			if (index == -1)return;
 
 			System::String^ file = OFN();
 
+			if (FolderOrSoundIsEmpty(file))return;
+			
 			ListMusic->Items->Insert(index, file);
 		}
-		private: System::Void BTN_ADDCO_Click(System::Object^ sender, System::EventArgs^ e) {
+
+		private: System::Void BTN_ADDCO_Click(System::Object^ sender, System::EventArgs^ e)
+		{
 		}
-		private: System::Void BTN_DELCON_Click(System::Object^ sender, System::EventArgs^ e) {
+
+		private: System::Void BTN_DELCON_Click(System::Object^ sender, System::EventArgs^ e) 
+		{
 		}
 
 			   //Combobox
 		private: System::Void Configs_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e) 
 		{
-			
+			MessageBox::Show("Seleccion de combobox");
 		}
 			   //Editor
 
@@ -348,7 +372,7 @@ namespace KeySoundEditor {
 			loadMusicWrapper->StartAsyncLoad();
 		}
 
-	   private: System::Void OnLoadTick(System::Object^ sender, System::EventArgs^ e)
+		private: System::Void OnLoadTick(System::Object^ sender, System::EventArgs^ e)
 	   {
 		   loadMusicWrapper->UpdateAsyncLoad();
 
@@ -370,7 +394,8 @@ namespace KeySoundEditor {
 			if (savedMusicWrapper->IsSavedDone())
 			{
 				MessageBox::Show("saved sounds");
-				SavedTimer->Stop();
+				BTN_SAVED->Text = "SAVED";
+				savedTimer->Stop();
 			}
 
 		}
@@ -393,16 +418,42 @@ namespace KeySoundEditor {
 		private: System::String^ OFN()
 		{
 			System::String^ file = gcnew System::String("");
-			if (SearchSound->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+			if (searchSound->ShowDialog() == System::Windows::Forms::DialogResult::OK)
 			{
-				file = SearchSound->FileName;
+				file = searchSound->FileName;
 			}
 			return file;
 		}
 
+		private: System::String^ FBD()//Folder browse dialog
+		{
+			System::String^ folder = gcnew System::String("");
+			if (searchFolder->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+			{
+				folder = searchFolder->SelectedPath;
+			}
+			return folder;
+		}
+
 		private: int IsRemove(System::String^ message)
 		{
-			System::String^ itemName = ListMusic->SelectedItem->ToString();
+			const int noRetuns = -1;
+
+			System::Object^ objectItem = ListMusic->SelectedItem;
+
+			if (objectItem == nullptr)
+			{
+				System::Windows::Forms::MessageBox::Show
+				(
+					"Select an item",
+					"Info",
+					System::Windows::Forms::MessageBoxButtons::OK,
+					System::Windows::Forms::MessageBoxIcon::Information
+				);
+				return noRetuns;
+			}
+
+			System::String^ itemName = objectItem->ToString();
 
 			System::Windows::Forms::DialogResult result = System::Windows::Forms::MessageBox::Show
 			(
@@ -411,13 +462,64 @@ namespace KeySoundEditor {
 				System::Windows::Forms::MessageBoxButtons::YesNo,
 				System::Windows::Forms::MessageBoxIcon::Warning
 			);
-			if (result == System::Windows::Forms::DialogResult::No)return NULL;
+			if (result == System::Windows::Forms::DialogResult::No)return noRetuns;
 
 			int index = ListMusic->SelectedIndex;
 
 			ListMusic->Items->RemoveAt(index);
 
+			BTN_SAVED->Text = "SAVED*";
+
+
 			return index;
+		}
+
+		private: System::Void ReadFolderConvertToWav()
+		{
+			ListMusic->Items->Clear();
+			System::String^ folder = FBD();
+			if (FolderOrSoundIsEmpty(folder))return;
+
+			std::wstring wfolder = SysStringToWString(folder);
+			std::vector<std::wstring> files;
+
+
+
+			for (const auto& entry : fs::directory_iterator(wfolder))
+			{
+				if (entry.is_regular_file())
+				{
+					std::wstring file = entry.path().wstring();
+					files.push_back(file);
+				}
+			}
+			
+
+			for (size_t i = 0; i < files.size(); i++)
+			{
+				size_t index = files[i].find(L".wav");
+				if (index != std::wstring::npos)
+				{	
+					ListMusic->Items->Add(gcnew System::String(files[i].c_str()));
+				}
+			}
+
+		}
+		
+		private: bool FolderOrSoundIsEmpty(System::String^ folderOrSound)
+		{
+			bool IsNull = (System::String::IsNullOrEmpty(folderOrSound) || System::String::IsNullOrWhiteSpace(folderOrSound));
+			if (IsNull)
+			{
+				System::Windows::Forms::MessageBox::Show
+				(
+					"Select a sound or folder",
+					"Info",
+					System::Windows::Forms::MessageBoxButtons::OK,
+					System::Windows::Forms::MessageBoxIcon::Information
+				);
+			}
+			return IsNull;
 		}
 
 		private: System::String^ WStringToSysString(const std::wstring& wstr)
