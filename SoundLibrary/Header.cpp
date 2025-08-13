@@ -3,7 +3,7 @@
 
 MUSIC_API std::vector<DIR> listMusic;
 
-MUSIC_API std::wstring StringToWString(const std::string& str)
+extern "C" MUSIC_API std::wstring StringToWString(const std::string & str)
 {
     if (str.empty()) return std::wstring();
 
@@ -13,7 +13,7 @@ MUSIC_API std::wstring StringToWString(const std::string& str)
     return wstrTo;
 }
 
-MUSIC_API std::string WStringToString(const std::wstring& wstr)
+extern "C" MUSIC_API std::string WStringToString(const std::wstring & wstr)
 {
     if (wstr.empty()) return std::string();
 
