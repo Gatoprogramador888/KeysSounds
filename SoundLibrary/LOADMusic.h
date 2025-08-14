@@ -34,20 +34,12 @@ public:
 /*CONSUMIBLES DESDE OTROS LENGUAJES COMO DLL*/
 extern "C" {
 
-    MUSIC_API LOADMusic* LOADMusic_Instance() {
-        return &LOADMusic::Instance();
-    }
+    MUSIC_API LOADMusic* LOADMusic_Instance(); 
 
-    MUSIC_API void LOADMusic_StartAsyncLoad() {
-        LOADMusic::Instance().StartAsyncLoad();
-    }
+    MUSIC_API void LOADMusic_StartAsyncLoad(); 
 
-    MUSIC_API void LOADMusic_UpdateAsyncLoad() {
-        LOADMusic::Instance().UpdateAsyncLoad();
-    }
+    MUSIC_API void LOADMusic_UpdateAsyncLoad(); 
 
-    MUSIC_API bool LOADMusic_IsLoadDone() {
-        return LOADMusic::Instance().IsLoadDone();
-    }
+    MUSIC_API bool LOADMusic_IsLoadDone(); 
 
 }

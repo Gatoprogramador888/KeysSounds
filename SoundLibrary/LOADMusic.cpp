@@ -23,7 +23,7 @@ std::experimental::generator<std::wstring> LOADMusic::LoadsFile()
 
     if (!fileLoad.is_open())
     {
-        MessageBoxW(NULL, (L"Could not read " + dirFile).c_str(), L"", MB_OK);
+        MessageBoxW(NULL, (L"Could not read " + dirFile).c_str(), L"Error", MB_OK | MB_ICONERROR);
         co_return;
     }
 
@@ -71,3 +71,24 @@ bool LOADMusic::IsLoadDone() const
 {
     return !loading;
 }
+
+LOADMusic* LOADMusic_Instance()
+{
+    return &LOADMusic::Instance();
+}
+
+void LOADMusic_StartAsyncLoad()
+{
+    LOADMusic::Instance().StartAsyncLoad();
+}
+
+void LOADMusic_UpdateAsyncLoad()
+{
+    LOADMusic::Instance().UpdateAsyncLoad();
+}
+
+bool LOADMusic_IsLoadDone()
+{
+    return LOADMusic::Instance().IsLoadDone();
+}
+
