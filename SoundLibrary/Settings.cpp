@@ -26,8 +26,19 @@ std::wstring Settings::MainConfiguration()
     return retorno;
 }
 
+void Settings::SetCurrentConfiguration(std::wstring configuration)
+{
+    currentConfiguration = configuration;
+}
+
+std::wstring Settings::CurrentConfiguration()
+{
+    return currentConfiguration;
+}
+
 void Settings::ReadSettings()
 {
+    currentConfiguration = MainConfiguration();
     configurations.clear();
     std::wifstream config(dirSettings);
     std::wstring line;
@@ -89,6 +100,20 @@ void Settings::SavedSettings()
     
 }
 
+std::wstring Settings::GetConfiguration(size_t index)
+{
+    try
+    {
+        std::wstring returns = configurations.at(index);
+        return returns;
+    }
+    catch (const std::out_of_range& oor)
+    {
+        std::cerr << "Out of Range error: " << oor.what() << std::endl;
+    }
+    return L"";
+}
+
 
 
 
@@ -102,6 +127,17 @@ Settings* Settings_Instance()
 void Settings_Read()
 {
     Settings::Instance().ReadSettings();
+}
+
+const wchar_t* Settings_GetCurrentConfiguration()
+{
+    static std::wstring cache = Settings::Instance().CurrentConfiguration();
+    return cache.c_str();
+}
+
+void Settings_CurrentConfiguration(std::wstring configuration)
+{
+    Settings::Instance().SetCurrentConfiguration(configuration);
 }
 
 MUSIC_API const wchar_t* Settings_MainConfiguration() {
@@ -122,13 +158,22 @@ MUSIC_API void Settings_DeleteConfiguration(std::wstring configuration) {
 }
 
 MUSIC_API std::size_t Settings_PossibleConfigurationsCount() {
-    static std::vector<std::wstring> list = Settings::Instance().Getlist();
-    return list.size();
+    static std::vector<std::wstring> cache;
+    if (cache.empty())
+    {
+        cache.resize(Settings::Instance().Getlist().size());
+    }
+    
+    return cache.size();
 }
 
 MUSIC_API const wchar_t* Settings_PossibleConfigurationAt(size_t index) {
-    static std::wstring retorno = Settings::Instance().GetConfiguration(index);
-    return retorno.c_str();
+    static std::vector<std::wstring> cache;
+    if (cache.empty()) {
+        cache.resize(Settings::Instance().Getlist().size());
+    }
+    cache[index] = Settings::Instance().GetConfiguration(index);
+    return cache[index].c_str();
 }
 
 MUSIC_API void Settings_SaveSettings() {

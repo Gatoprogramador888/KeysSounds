@@ -17,10 +17,12 @@ WrapperSettings::WrapperSettings(String^ dllPath)
     pPossibleConfigurationAt = (FN_Settings_PossibleConfigurationAt)GetProcAddress(hModule, "Settings_PossibleConfigurationAt");
     pSaveSettings = (FN_Settings_SaveSettings)GetProcAddress(hModule, "Settings_SaveSettings");
     pReadSettings = (FN_Settings_ReadSettings)GetProcAddress(hModule, "Settings_Read");
+    pSetCurrentConfiguration = (FN_Settings_SetCurrentConfiguration)GetProcAddress(hModule, "Settings_CurrentConfiguration");
+    pGetCurrentConfiguration = (FN_Settings_GetCurrentConfiguration)GetProcAddress(hModule, "Settings_GetCurrentConfiguration");
 
 
     if (!pMainConfiguration || !pSetMainConfiguration || !pAddConfiguration || !pDeleteConfiguration || !pPossibleConfigurationsCount ||
-        !pPossibleConfigurationAt || !pSaveSettings || !pReadSettings)
+        !pPossibleConfigurationAt || !pSaveSettings || !pReadSettings || !pSetCurrentConfiguration || !pGetCurrentConfiguration)
     {
         FreeLibrary(hModule);
         hModule = nullptr;
@@ -62,6 +64,11 @@ void WrapperSettings::DeleteConfiguration(String^ configuration)
     pDeleteConfiguration(nativeStr);
 }
 
+void WrapperSettings::SetCurrentConfiguration(std::wstring configurartion)
+{
+    pSetCurrentConfiguration(configurartion);
+}
+
 size_t WrapperSettings::PossibleConfigurationsCount()
 {
     return pPossibleConfigurationsCount();
@@ -73,14 +80,22 @@ String^ WrapperSettings::PossibleConfigurationAt(int index)
     return gcnew String(result);
 }
 
+String^ WrapperSettings::GetCurrentConfiguration()
+{
+    String^ returns = gcnew String(pGetCurrentConfiguration());
+    return returns;
+}
+
 List<String^>^ WrapperSettings::GetSettings()
 {
     List<String^>^ retorno = gcnew List<String^>();
     size_t count = pPossibleConfigurationsCount();
 
-    for (size_t i = 0; i < count; i++)
+    for (size_t i = 0; i < count; ++i)
     {
-        retorno->Add(gcnew String(pPossibleConfigurationAt(i)));
+        const wchar_t* rawItem = pPossibleConfigurationAt(i);
+        String^ item = gcnew String(rawItem);
+        retorno->Add(item);
     }
 
     return retorno;

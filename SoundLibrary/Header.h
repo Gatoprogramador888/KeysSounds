@@ -37,8 +37,8 @@ struct DIR
 extern MUSIC_API std::vector<DIR> listMusic;
 
 // Funciones de conversión exportadas
-extern "C" MUSIC_API std::wstring StringToWString(const std::string & str);
-extern "C" MUSIC_API std::string WStringToString(const std::wstring & wstr);
+extern "C" MUSIC_API const wchar_t* StringToWString(const std::string & str);
+extern "C" MUSIC_API const char* WStringToString(const std::wstring & wstr);
 
 
 // Si quieres dejar funciones auxiliares estáticas internas, las puedes dejar sin exportar

@@ -14,16 +14,16 @@ LOADMusic& LOADMusic::Instance()
 
 std::experimental::generator<std::wstring> LOADMusic::LoadsFile()
 {
-    //std::string dirFile = currentPath.string() + "\\Music_Directory.txt";
     fs::path currentPath = fs::current_path();
-    std::wstring dirFile = currentPath.wstring() + L"\\Music\\" + Settings::Instance().MainConfiguration() + wextension;
+    std::wstring dirFile = currentPath.wstring() + L"\\Music\\" + Settings::Instance().CurrentConfiguration() + wextension;
     //MessageBoxW(NULL, dirFile.c_str(), L"info", MB_OK);
     std::wifstream fileLoad(dirFile);
-    size_t index = listMusic.size();
+    //size_t index = listMusic.size();
+    size_t index = 1;
 
     if (!fileLoad.is_open())
     {
-        MessageBox(NULL, "no se pudo leer", "", MB_OK);
+        MessageBoxW(NULL, (L"Could not read " + dirFile).c_str(), L"", MB_OK);
         co_return;
     }
 
@@ -46,6 +46,7 @@ std::experimental::generator<std::wstring> LOADMusic::LoadsFile()
 
 void LOADMusic::StartAsyncLoad()
 {
+    listMusic.clear();
     loadFile = LoadsFile();
     genLoadFileIt = loadFile.begin();
     loading = true;

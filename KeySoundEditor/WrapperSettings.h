@@ -14,9 +14,11 @@ public:
     void SetMainConfiguration(String^ configuration);
     void AddConfiguration(String^ configuration);
     void DeleteConfiguration(String^ configuration);
+    void SetCurrentConfiguration(std::wstring configurartion);
 
     size_t PossibleConfigurationsCount();
     String^ PossibleConfigurationAt(int index);
+    String^ GetCurrentConfiguration();
     List<String^>^ GetSettings();
 
 
@@ -35,6 +37,9 @@ private:
     typedef const wchar_t* (*FN_Settings_PossibleConfigurationAt)(size_t);
     typedef void (*FN_Settings_SaveSettings)();
     typedef void (*FN_Settings_ReadSettings)();
+    typedef void (*FN_Settings_ReadSettings)();
+    typedef const wchar_t* (*FN_Settings_GetCurrentConfiguration)();
+    typedef void (*FN_Settings_SetCurrentConfiguration)(std::wstring);
 
     // Punteros a las funciones
     FN_Settings_MainConfiguration pMainConfiguration;
@@ -45,5 +50,7 @@ private:
     FN_Settings_PossibleConfigurationAt pPossibleConfigurationAt;
     FN_Settings_SaveSettings pSaveSettings;
     FN_Settings_ReadSettings pReadSettings;
+    FN_Settings_GetCurrentConfiguration pGetCurrentConfiguration;
+    FN_Settings_SetCurrentConfiguration pSetCurrentConfiguration;
 };
 

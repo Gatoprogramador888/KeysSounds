@@ -75,6 +75,7 @@ namespace KeySoundEditor {
 		SavedWrapper^ savedMusicWrapper;
 		WrapperSettings^ wrapperSettings;
 		System::String^ dllPath = gcnew System::String("SoundLibrary.dll");
+		String^ previous_selection;
 		
 	private:
 		void InitializeClass()
@@ -315,8 +316,6 @@ namespace KeySoundEditor {
 		{
 			String^ seleccion = Configs->Text;
 			wrapperSettings->SetMainConfiguration(seleccion);
-			ListMusic->Items->Clear();
-			StartLoadTimer();
 		}
 
 		private: System::Void BTN_RF_Click(System::Object^ sender, System::EventArgs^ e)
@@ -379,7 +378,13 @@ namespace KeySoundEditor {
 			   //Combobox
 		private: System::Void Configs_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e) 
 		{
-			//String^ config = Configs->Text;
+			std::wstring configuration = SysStringToWString(Configs->Text);
+			wrapperSettings->SetCurrentConfiguration(configuration);
+			if (previous_selection != "config1")
+			{
+				ListMusic->Items->Clear();
+				StartLoadTimer();
+			}
 		}
 			   //Editor
 
@@ -391,7 +396,8 @@ namespace KeySoundEditor {
 				System::String^ item = wrapperSettings->GetSettings()->ToArray()[i];
 				Configs->Items->Insert(i, item);
 			}
-			Configs->SelectedIndex = NULL;
+			previous_selection = Configs->Text;
+			Configs->Text = wrapperSettings->MainConfiguration();
 
 			StartLoadTimer();
 		}
@@ -428,14 +434,14 @@ namespace KeySoundEditor {
 			  //Funciones del Editor
 		private: System::Void LoadInListBox()
 		{
-			if (wrapperDir->isEmpty()) {
+			if (wrapperDir->isEmpty()) { 
 				return;
 			}
 
 			System::Collections::Generic::List<DIR_IMPORT^>^ list = wrapperDir->GetMusicList();
 			
-			
-			for (int i = 0; i < wrapperDir->Count(); i++)
+			size_t count = wrapperDir->Count();
+			for (size_t i = 0; i < count; i++)
 			{
 				ListMusic->Items->Add(list->ToArray()[i]->dir);
 			}
@@ -555,6 +561,7 @@ namespace KeySoundEditor {
 
 		private: Void StartLoadTimer()
 		{
+			previous_selection = Configs->Text;
 			int timeSleep = 50;
 			loadTimer = gcnew System::Windows::Forms::Timer();
 			loadTimer->Interval = timeSleep; // milisegundos (0.5 seg)
