@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "LOADMusic.h"
+#include "Settings.h"
 #include<filesystem>
 #include<fstream>
 
@@ -13,8 +14,9 @@ LOADMusic& LOADMusic::Instance()
 
 std::experimental::generator<std::wstring> LOADMusic::LoadsFile()
 {
+    //std::string dirFile = currentPath.string() + "\\Music_Directory.txt";
     fs::path currentPath = fs::current_path();
-    std::string dirFile = currentPath.string() + "\\Music_Directory.txt";
+    std::wstring dirFile = currentPath.wstring() + L"\\Music\\" + Settings::Instance().MainConfiguration();
     std::wifstream fileLoad(dirFile);
     size_t index = listMusic.size();
 

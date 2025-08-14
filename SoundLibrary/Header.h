@@ -40,6 +40,7 @@ extern MUSIC_API std::vector<DIR> listMusic;
 extern "C" MUSIC_API std::wstring StringToWString(const std::string & str);
 extern "C" MUSIC_API std::string WStringToString(const std::wstring & wstr);
 
+
 // Si quieres dejar funciones auxiliares estáticas internas, las puedes dejar sin exportar
 static std::wstring SStringToWString(const std::string& str)
 {
@@ -59,7 +60,8 @@ static std::string SWStringToString(const std::wstring& wstr)
     return strTo;
 }
 
-//OPENFILENAME
+/*
+OPENFILENAME
 
 
 static std::wstring OpenFileDialog()
@@ -83,7 +85,7 @@ static std::wstring OpenFileDialog()
         return wfile;
     }
     return std::wstring(); // vacío si cancelado
-}
+}*/
 
 /*static std::wstring OpenFileDialog(HWND hwnd)
 {

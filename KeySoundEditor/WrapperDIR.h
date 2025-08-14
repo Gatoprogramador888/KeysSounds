@@ -23,12 +23,12 @@ public ref struct DIR_IMPORT
 
 // Punteros a funciones de la DLL
 typedef int(__stdcall* fnGetListMusicCount)();
-typedef void(__stdcall* fnGetListMusic)(DIR_EXPORT*, int);
-typedef void(__stdcall* fnSetListMusic)(DIR_EXPORT*, int);
-typedef void(__stdcall* fnAddMusicItem)(std::wstring, int);
-typedef void(__stdcall* fnDeleteMusicItem)(int);
-typedef void(__stdcall* fnModMusicItem)(int, DIR_EXPORT*);
-typedef DIR_EXPORT*(__stdcall* fnGetMusicItem)(int);
+typedef void(__stdcall* fnGetListMusic)(DIR_EXPORT*, size_t);
+typedef void(__stdcall* fnSetListMusic)(DIR_EXPORT*, size_t);
+typedef void(__stdcall* fnAddMusicItem)(std::wstring, size_t);
+typedef void(__stdcall* fnDeleteMusicItem)(size_t);
+typedef void(__stdcall* fnModMusicItem)(size_t, DIR_EXPORT*);
+typedef DIR_EXPORT*(__stdcall* fnGetMusicItem)(size_t);
 
 public ref class WrapperDIR
 {

@@ -129,6 +129,7 @@
     <ClCompile Include="WrapperDIR.cpp" />
     <ClCompile Include="Editor.cpp" />
     <ClCompile Include="LoadMusicWrapper.cpp" />
+    <ClCompile Include="WrapperSettings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SavedWrapper.h" />
@@ -137,6 +138,7 @@
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="LoadMusicWrapper.h" />
+    <ClInclude Include="WrapperSettings.h" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Editor.resx">

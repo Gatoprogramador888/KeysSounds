@@ -2,6 +2,7 @@
 #include "LoadMusicWrapper.h"
 #include "WrapperDIR.h"
 #include "SavedWrapper.h"
+#include "WrapperSettings.h"
 #include <string>
 #include <filesystem>
 #include <vector>
@@ -71,6 +72,7 @@ namespace KeySoundEditor {
 		LoadMusicWrapper^ loadMusicWrapper;
 		WrapperDIR^ wrapperDir;
 		SavedWrapper^ savedMusicWrapper;
+		WrapperSettings^ wrapperSettings;
 		System::String^ dllPath = gcnew System::String("SoundLibrary.dll");;
 		
 	private:
@@ -79,6 +81,7 @@ namespace KeySoundEditor {
 			loadMusicWrapper = gcnew LoadMusicWrapper(dllPath);
 			savedMusicWrapper = gcnew SavedWrapper(dllPath);
 			wrapperDir = gcnew WrapperDIR(dllPath);
+			wrapperSettings = gcnew WrapperSettings(dllPath);
 		}
 
 #pragma region Windows Form Designer generated code
@@ -358,12 +361,21 @@ namespace KeySoundEditor {
 			   //Combobox
 		private: System::Void Configs_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e) 
 		{
-			MessageBox::Show("Seleccion de combobox");
+			int seleccion = ListMusic->SelectedIndex;
+			MessageBox::Show(gcnew System::String(std::to_string(seleccion).c_str()));
 		}
 			   //Editor
 
 		private: System::Void Editor_Load(System::Object^ sender, System::EventArgs^ e) 
 		{
+			int count = wrapperSettings->GetSettings()->Count;
+			for (int i = 0; i < count; i++)
+			{
+				System::String^ item = wrapperSettings->GetSettings()->ToArray()[i];
+				Configs->Items->Insert(i, item);
+			}
+			Configs->SelectedIndex = NULL;
+
 			int timeSleep = 50;
 			loadTimer = gcnew System::Windows::Forms::Timer();
 			loadTimer->Interval = timeSleep; // milisegundos (0.5 seg)
@@ -404,14 +416,16 @@ namespace KeySoundEditor {
 			  //Funciones del Editor
 		private: System::Void LoadInListBox()
 		{
-			if (wrapperDir->isEmpty())return;
+			if (wrapperDir->isEmpty()) {
+				return;
+			}
 
 			System::Collections::Generic::List<DIR_IMPORT^>^ list = wrapperDir->GetMusicList();
 			
 			
 			for (int i = 0; i < wrapperDir->Count(); i++)
 			{
-				ListMusic->Items->Add(list->ToArray()[0]->dir);
+				ListMusic->Items->Add(list->ToArray()[i]->dir);
 			}
 		}
 
