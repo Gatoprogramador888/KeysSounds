@@ -66,8 +66,20 @@ bool NotifyAppToStop(const wchar_t* eventName)
     return true;
 }
 
+constexpr const char* yes = "y";
+constexpr const char* YES = "Y";
 
 int main() {
+    std::string decision;
+    std::cout << "Do you want to continue with the uninstallation? (y/n)\n";
+    std::cin >> decision;
+
+    if (decision != yes || decision != YES)
+    {
+        std::cout << "Closing uninstaller\n";
+        return 0;
+    }
+
     //1. Terminate hook task if on
     if (NotifyAppToStop(EVENT_NAME))
     {
@@ -90,16 +102,24 @@ int main() {
     GetModuleFileNameW(NULL, path, MAX_PATH);
     fs::path mainFolder = std::filesystem::path(path).parent_path();
     fs::path folderMusic = mainFolder / "Music";
+    fs::path folderSettings = mainFolder / "Settings";
 
     if (DeleteFolderRecursively(folderMusic))
         std::wcout << L"Music folder deleted";
     else
         std::wcout << L"Could not delete Music Folder\n";
 
+    if(DeleteFolderRecursively(folderSettings))
+        std::wcout << L"Settings folder deleted";
+    else
+        std::wcout << L"Could not delete Settings Folder\n";
+
     if (DeleteFolderRecursively(mainFolder))
         std::wcout << L"Music folder deleted\n";
     else
         std::wcout << L"Could not delete parent folder\n";
+
+    std::wcout << L"Press any key to finish the uninstallation.\n";
 
     return 0;
 }
