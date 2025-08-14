@@ -9,10 +9,10 @@ size_t GetListMusicCount()
 void SetListMusic(DIR* list, size_t count)
 {
     listMusic.clear();
-    size_t limit = (count < listMusic.size()) ? count : listMusic.size();
-    for (int i = 0; i < limit; i++) {
-        listMusic[i].dir = list[i].dir;
-        listMusic[i].index = list[i].index;
+    //size_t limit = (count < listMusic.size()) ? count : listMusic.size();
+    for (size_t i = 0; i < count; i++) {
+        DIR directory = { list[i].dir, list[i].index };
+        listMusic.push_back(directory);
     }
 }
 

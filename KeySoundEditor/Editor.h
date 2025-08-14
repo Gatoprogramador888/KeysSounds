@@ -75,7 +75,8 @@ namespace KeySoundEditor {
 		SavedWrapper^ savedMusicWrapper;
 		WrapperSettings^ wrapperSettings;
 		System::String^ dllPath = gcnew System::String("SoundLibrary.dll");
-		String^ previous_selection;
+		String^ previous_selection, ^DEFAULT = L"";
+		int timeSleep = 16;
 		
 	private:
 		void InitializeClass()
@@ -234,7 +235,7 @@ namespace KeySoundEditor {
 			this->Configs->Name = L"Configs";
 			this->Configs->Size = System::Drawing::Size(165, 28);
 			this->Configs->TabIndex = 8;
-			this->Configs->Text = L"config1";
+			this->Configs->Text = DEFAULT;
 			this->Configs->SelectedIndexChanged += gcnew System::EventHandler(this, &Editor::Configs_SelectedIndexChanged);
 			// 
 			// BTN_ADDCO
@@ -304,11 +305,11 @@ namespace KeySoundEditor {
 			//Buttons
 		private: System::Void BTN_SAVED_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
-
-			int timeSleep = 50;
 			savedTimer = gcnew System::Windows::Forms::Timer();
 			savedTimer->Interval = timeSleep; // milisegundos (0.5 seg)
 			savedTimer->Tick += gcnew System::EventHandler(this, &Editor::OnSavedTick);
+			wrapperDir->SetMusicList(ListMusic->Items);
+			savedMusicWrapper->StartAsyncSaved();
 			savedTimer->Start();
 		}
 
@@ -380,7 +381,7 @@ namespace KeySoundEditor {
 		{
 			std::wstring configuration = SysStringToWString(Configs->Text);
 			wrapperSettings->SetCurrentConfiguration(configuration);
-			if (previous_selection != "config1")
+			if (previous_selection != DEFAULT)
 			{
 				ListMusic->Items->Clear();
 				StartLoadTimer();
@@ -415,17 +416,14 @@ namespace KeySoundEditor {
 
 		private: System::Void OnSavedTick(System::Object^ sender, System::EventArgs^ e)
 		{
-			wrapperDir->SetMusicList(ListMusic->Items);
-
-			savedMusicWrapper->StartAsyncSaved();
 			savedMusicWrapper->UpdateAsyncSaved();
 
 
 			if (savedMusicWrapper->IsSavedDone())
 			{
+				savedTimer->Stop();
 				MessageBox::Show("saved sounds");
 				BTN_SAVED->Text = "SAVED";
-				savedTimer->Stop();
 			}
 
 		}
@@ -441,7 +439,7 @@ namespace KeySoundEditor {
 			System::Collections::Generic::List<DIR_IMPORT^>^ list = wrapperDir->GetMusicList();
 			
 			size_t count = wrapperDir->Count();
-			for (size_t i = 0; i < count; i++)
+			for (int i = 0; i < count; i++)
 			{
 				ListMusic->Items->Add(list->ToArray()[i]->dir);
 			}
@@ -562,7 +560,6 @@ namespace KeySoundEditor {
 		private: Void StartLoadTimer()
 		{
 			previous_selection = Configs->Text;
-			int timeSleep = 50;
 			loadTimer = gcnew System::Windows::Forms::Timer();
 			loadTimer->Interval = timeSleep; // milisegundos (0.5 seg)
 			loadTimer->Tick += gcnew System::EventHandler(this, &Editor::OnLoadTick);
