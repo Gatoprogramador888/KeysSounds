@@ -46,24 +46,56 @@ bool AddToStartup(const std::wstring& appName, const std::wstring& appPath)
 
 void CreateFileMusic()
 {
-    std::filesystem::path pathOrigin = fs::current_path();
-    std::filesystem::path pathFile = pathOrigin / "Music_Directory.txt";
-    std::filesystem::path pathMusic = pathOrigin / "Music";
-    std::wofstream file(pathFile);
     try {
-        if (!fs::exists(pathMusic) || !fs::is_directory(pathMusic)) {
-            MessageBoxW(NULL, L"The directory does not exist or is invalid", L"Error", MB_OK | MB_ICONERROR);
+        fs::path pathOrigin = fs::current_path();
+
+        // Carpetas
+        fs::path pathMusicFolder = pathOrigin / "Music";     // Donde irá Music_Directory.txt
+        fs::path pathMusics = pathOrigin / "Musics";         // Carpeta con sonidos
+        fs::path pathSettings = pathOrigin / "Settings";     // Carpeta con Settings.txt y MainConfiguration.txt
+
+        // Crear carpetas si no existen
+        fs::create_directories(pathMusicFolder);
+        fs::create_directories(pathSettings);
+
+        // Rutas de los archivos
+        fs::path fileMusicDirectory = pathMusicFolder / "Music_Directory.txt";
+        fs::path fileSettings = pathSettings / "Settings.txt";
+        fs::path fileMainConfig = pathSettings / "MainConfiguration.txt";
+
+        // Validar Musics
+        if (!fs::exists(pathMusics) || !fs::is_directory(pathMusics)) {
+            MessageBoxW(NULL, L"The 'Musics' directory does not exist or is invalid", L"Error", MB_OK | MB_ICONERROR);
             return;
         }
 
-        for (const auto& entry : fs::directory_iterator(pathMusic)) {
-            if (fs::is_regular_file(entry.path())) {
-                file << entry.path().filename().wstring() << L"\n";
+        // Escribir Music_Directory.txt con lista de canciones
+        {
+            std::wofstream file(fileMusicDirectory);
+            if (!file) {
+                MessageBoxW(NULL, L"Cannot create Music_Directory.txt", L"Error", MB_OK | MB_ICONERROR);
+                return;
             }
+
+            for (const auto& entry : fs::directory_iterator(pathMusics)) {
+                if (fs::is_regular_file(entry.path())) {
+                    file << entry.path().filename().wstring() << L"\n";
+                }
+            }
+        }
+
+        // Escribir "Music_Directory" en Settings.txt y MainConfiguration.txt
+        {
+            std::wofstream settingsFile(fileSettings);
+            settingsFile << L"Music_Directory\n";
+        }
+        {
+            std::wofstream mainConfigFile(fileMainConfig);
+            mainConfigFile << L"Music_Directory\n";
         }
     }
     catch (const fs::filesystem_error& e) {
-        MessageBox(NULL, e.what(), "Error", MB_OK | MB_ICONERROR);
+        MessageBoxA(NULL, e.what(), "Filesystem Error", MB_OK | MB_ICONERROR);
     }
 }
 
