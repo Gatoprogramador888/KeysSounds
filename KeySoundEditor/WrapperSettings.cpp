@@ -16,15 +16,17 @@ WrapperSettings::WrapperSettings(String^ dllPath)
     pPossibleConfigurationsCount = (FN_Settings_PossibleConfigurationsCount)GetProcAddress(hModule, "Settings_PossibleConfigurationsCount");
     pPossibleConfigurationAt = (FN_Settings_PossibleConfigurationAt)GetProcAddress(hModule, "Settings_PossibleConfigurationAt");
     pSaveSettings = (FN_Settings_SaveSettings)GetProcAddress(hModule, "Settings_SaveSettings");
+    pReadSettings = (FN_Settings_ReadSettings)GetProcAddress(hModule, "Settings_Read");
 
 
     if (!pMainConfiguration || !pSetMainConfiguration || !pAddConfiguration || !pDeleteConfiguration || !pPossibleConfigurationsCount ||
-        !pPossibleConfigurationAt || !pSaveSettings)
+        !pPossibleConfigurationAt || !pSaveSettings || !pReadSettings)
     {
         FreeLibrary(hModule);
         hModule = nullptr;
         throw gcnew System::Exception("No se pudieron obtener las funciones de LOADMusic en la DLL");
     }
+    pReadSettings();
 }
 
 WrapperSettings::~WrapperSettings()

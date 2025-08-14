@@ -18,18 +18,17 @@ std::wstring Settings::MainConfiguration()
     fs::path currentPath = fs::current_path();
     std::wstring dir = currentPath.wstring() + L"\\" + dirMainConfiguration;
     std::wifstream config(dir);
-    //MessageBoxW(NULL, dir.c_str(), L"", MB_OK);
     std::wstring line, retorno;
     while (std::getline(config, line))
     {
         retorno = line;
-        //MessageBoxW(NULL, line.c_str(), L"", MB_OK);
     }
     return retorno;
 }
 
-std::vector<std::wstring> Settings::PossibleConfigurations()
+void Settings::ReadSettings()
 {
+    configurations.clear();
     std::wifstream config(dirSettings);
     std::wstring line;
     while (std::getline(config, line))
@@ -37,7 +36,6 @@ std::vector<std::wstring> Settings::PossibleConfigurations()
         if(line != L"")  
             configurations.push_back(line);
     }
-    return configurations;
 }
 
 void Settings::SetMainConfiguration(std::wstring configuration)
@@ -49,7 +47,7 @@ void Settings::SetMainConfiguration(std::wstring configuration)
 void Settings::AddConfiguration(std::wstring configuration)
 {
     configurations.push_back(configuration);
-    std::wofstream archivo(dir + configuration); // Abre el archivo en modo escritura
+    std::wofstream archivo(dir + configuration + wextension); // Abre el archivo en modo escritura
 
     if (archivo.is_open()) {
         std::cout << "Archivo creado exitosamente." << std::endl;
@@ -58,33 +56,37 @@ void Settings::AddConfiguration(std::wstring configuration)
     else {
         std::cerr << "Error al crear el archivo." << std::endl;
     }
+    SavedSettings();
 }
 
 void Settings::DeleteConfiguration(std::wstring configuration)
 {
     auto it = std::find(configurations.begin(), configurations.end() ,configuration);
     configurations.erase(it);
-    if (_wremove((dir + configuration).c_str()) != 0)
+    if (_wremove((dir + configuration + wextension).c_str()) != 0)
     {
         std::cerr << "The file could not be deleted\n";
     }
+    SavedSettings();
 }
 
 void Settings::SavedSettings()
 {
     std::wofstream config(dirSettings);
-    config << MainConfiguration() + L"\n";
     for (size_t i = 0; i < configurations.size(); i++)
     {
         try
         {
-            config << configurations.at(i) + L"\n";
+            std::wstring configuration = configurations.at(i);
+            config << configuration + L"\n";
         }
         catch (const std::out_of_range& oor)
         {
             std::cerr << "Out of Range error: " << oor.what() << std::endl;
         }
     }
+
+    
 }
 
 
@@ -95,6 +97,11 @@ void Settings::SavedSettings()
 Settings* Settings_Instance()
 {
     return &Settings::Instance();
+}
+
+void Settings_Read()
+{
+    Settings::Instance().ReadSettings();
 }
 
 MUSIC_API const wchar_t* Settings_MainConfiguration() {
@@ -115,7 +122,8 @@ MUSIC_API void Settings_DeleteConfiguration(std::wstring configuration) {
 }
 
 MUSIC_API std::size_t Settings_PossibleConfigurationsCount() {
-    return Settings::Instance().PossibleConfigurations().size();
+    static std::vector<std::wstring> list = Settings::Instance().Getlist();
+    return list.size();
 }
 
 MUSIC_API const wchar_t* Settings_PossibleConfigurationAt(size_t index) {

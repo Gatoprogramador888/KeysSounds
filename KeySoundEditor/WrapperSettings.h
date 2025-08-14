@@ -34,6 +34,7 @@ private:
     typedef size_t(*FN_Settings_PossibleConfigurationsCount)();
     typedef const wchar_t* (*FN_Settings_PossibleConfigurationAt)(size_t);
     typedef void (*FN_Settings_SaveSettings)();
+    typedef void (*FN_Settings_ReadSettings)();
 
     // Punteros a las funciones
     FN_Settings_MainConfiguration pMainConfiguration;
@@ -43,5 +44,6 @@ private:
     FN_Settings_PossibleConfigurationsCount pPossibleConfigurationsCount;
     FN_Settings_PossibleConfigurationAt pPossibleConfigurationAt;
     FN_Settings_SaveSettings pSaveSettings;
+    FN_Settings_ReadSettings pReadSettings;
 };
 

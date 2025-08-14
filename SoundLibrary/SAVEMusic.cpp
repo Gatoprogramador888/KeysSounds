@@ -10,7 +10,7 @@ namespace fs = std::filesystem;
 std::experimental::generator<std::wstring> SAVEMusic::SavesFile()
 {
 	fs::path currentPath = fs::current_path();
-	std::wstring dirFile = currentPath.wstring() + L"\\Music\\" + Settings::Instance().MainConfiguration();
+	std::wstring dirFile = currentPath.wstring() + L"\\Music\\" + Settings::Instance().MainConfiguration() + wextension;
 	std::wofstream fileSave(dirFile);
 
 	if (!fileSave.is_open())

@@ -3,6 +3,7 @@
 #include "WrapperDIR.h"
 #include "SavedWrapper.h"
 #include "WrapperSettings.h"
+#include "Creation Configuration.h"
 #include <string>
 #include <filesystem>
 #include <vector>
@@ -73,7 +74,7 @@ namespace KeySoundEditor {
 		WrapperDIR^ wrapperDir;
 		SavedWrapper^ savedMusicWrapper;
 		WrapperSettings^ wrapperSettings;
-		System::String^ dllPath = gcnew System::String("SoundLibrary.dll");;
+		System::String^ dllPath = gcnew System::String("SoundLibrary.dll");
 		
 	private:
 		void InitializeClass()
@@ -312,6 +313,10 @@ namespace KeySoundEditor {
 
 		private: System::Void BTN_ACCEPT_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
+			String^ seleccion = Configs->Text;
+			wrapperSettings->SetMainConfiguration(seleccion);
+			ListMusic->Items->Clear();
+			StartLoadTimer();
 		}
 
 		private: System::Void BTN_RF_Click(System::Object^ sender, System::EventArgs^ e)
@@ -352,17 +357,29 @@ namespace KeySoundEditor {
 
 		private: System::Void BTN_ADDCO_Click(System::Object^ sender, System::EventArgs^ e)
 		{
+			CreationConfiguration^ formName = gcnew CreationConfiguration();
+			if (formName->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+			{
+				String^ name = formName->name;
+				Configs->Items->Add(name);
+				wrapperSettings->AddConfiguration(name);
+			}
 		}
 
 		private: System::Void BTN_DELCON_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
+			int select = Configs->SelectedIndex;
+			String^ setting = Configs->Text;
+			wrapperSettings->DeleteConfiguration(setting);
+			Configs->Items->RemoveAt(select);
+			Configs->SelectedIndex = select - 1;
+			Configs->Update();
 		}
 
 			   //Combobox
 		private: System::Void Configs_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e) 
 		{
-			int seleccion = ListMusic->SelectedIndex;
-			MessageBox::Show(gcnew System::String(std::to_string(seleccion).c_str()));
+			//String^ config = Configs->Text;
 		}
 			   //Editor
 
@@ -376,24 +393,19 @@ namespace KeySoundEditor {
 			}
 			Configs->SelectedIndex = NULL;
 
-			int timeSleep = 50;
-			loadTimer = gcnew System::Windows::Forms::Timer();
-			loadTimer->Interval = timeSleep; // milisegundos (0.5 seg)
-			loadTimer->Tick += gcnew System::EventHandler(this, &Editor::OnLoadTick);
-			loadTimer->Start();
-			loadMusicWrapper->StartAsyncLoad();
+			StartLoadTimer();
 		}
 
 		private: System::Void OnLoadTick(System::Object^ sender, System::EventArgs^ e)
-	   {
+	    {
 		   loadMusicWrapper->UpdateAsyncLoad();
 
 		   if (loadMusicWrapper->IsLoadDone())
 		   {
 			   LoadInListBox();
 			   loadTimer->Stop();
-		   }
-	   }
+		    }
+	    }
 
 		private: System::Void OnSavedTick(System::Object^ sender, System::EventArgs^ e)
 		{
@@ -539,6 +551,16 @@ namespace KeySoundEditor {
 		private: System::String^ WStringToSysString(const std::wstring& wstr)
 		{
 			 return gcnew System::String(wstr.c_str());
+		}
+
+		private: Void StartLoadTimer()
+		{
+			int timeSleep = 50;
+			loadTimer = gcnew System::Windows::Forms::Timer();
+			loadTimer->Interval = timeSleep; // milisegundos (0.5 seg)
+			loadTimer->Tick += gcnew System::EventHandler(this, &Editor::OnLoadTick);
+			loadTimer->Start();
+			loadMusicWrapper->StartAsyncLoad();
 		}
 
 		public: static std::wstring SysStringToWString(System::String^ s)

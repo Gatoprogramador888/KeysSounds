@@ -1,8 +1,8 @@
-C:\Users\gatob\source\repos\Teclado Sonido\x64\Debug\Musics\2025_08_10_15_53_19 (mp3cut.net).wav
-C:\Users\gatob\source\repos\Teclado Sonido\x64\Debug\Musics\2025_08_10_15_53_19 (mp3cut.net) (6).wav
-C:\Users\gatob\source\repos\Teclado Sonido\x64\Debug\Musics\2025_08_10_15_53_19 (mp3cut.net) (5).wav
-C:\Users\gatob\source\repos\Teclado Sonido\x64\Debug\Musics\2025_08_10_15_53_19 (mp3cut.net) (4).wav
-C:\Users\gatob\source\repos\Teclado Sonido\x64\Debug\Musics\2025_08_10_15_53_19 (mp3cut.net) (4).wav
-C:\Users\gatob\source\repos\Teclado Sonido\x64\Debug\Musics\2025_08_10_15_53_19 (mp3cut.net) (3).wav
-C:\Users\gatob\source\repos\Teclado Sonido\x64\Debug\Musics\2025_08_10_15_53_19 (mp3cut.net) (2).wav
-C:\Users\gatob\source\repos\Teclado Sonido\x64\Debug\Musics\2025_08_10_15_53_19 (mp3cut.net) (1).wav
+C:\Users\gatob\source\repos\Teclado Sonido\x64\Debug\Music\2025_08_10_15_53_19 (mp3cut.net).wav
+C:\Users\gatob\source\repos\Teclado Sonido\x64\Debug\Music\2025_08_10_15_53_19 (mp3cut.net) (6).wav
+C:\Users\gatob\source\repos\Teclado Sonido\x64\Debug\Music\2025_08_10_15_53_19 (mp3cut.net) (5).wav
+C:\Users\gatob\source\repos\Teclado Sonido\x64\Debug\Music\2025_08_10_15_53_19 (mp3cut.net) (4).wav
+C:\Users\gatob\source\repos\Teclado Sonido\x64\Debug\Music\2025_08_10_15_53_19 (mp3cut.net) (4).wav
+C:\Users\gatob\source\repos\Teclado Sonido\x64\Debug\Music\2025_08_10_15_53_19 (mp3cut.net) (3).wav
+C:\Users\gatob\source\repos\Teclado Sonido\x64\Debug\Music\2025_08_10_15_53_19 (mp3cut.net) (2).wav
+C:\Users\gatob\source\repos\Teclado Sonido\x64\Debug\Music\2025_08_10_15_53_19 (mp3cut.net) (1).wav

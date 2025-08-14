@@ -3,6 +3,9 @@
 #include <Windows.h>
 #include <string>
 
+constexpr const wchar_t* wextension = L".txt";
+constexpr const char* extension = ".txt";
+
 class MUSIC_API Settings
 {
 private:
@@ -16,7 +19,7 @@ public:
 
 	std::wstring MainConfiguration();
 
-	std::vector<std::wstring> PossibleConfigurations();
+	void ReadSettings();
 
 	void SetMainConfiguration(std::wstring configuration);
 
@@ -39,12 +42,16 @@ public:
 		return L"";
 	}
 
+	std::vector<std::wstring> Getlist() { return configurations; }
+
 };
 
 
 // Funciones tipo C que actúan como puente
 extern "C" {
 	MUSIC_API Settings* Settings_Instance();
+
+	MUSIC_API void Settings_Read();
 
 	MUSIC_API const wchar_t* Settings_MainConfiguration();
 	MUSIC_API void Settings_SetMainConfiguration(std::wstring configuration);
