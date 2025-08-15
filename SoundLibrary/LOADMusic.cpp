@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "LOADMusic.h"
+#include "Settings.h"
 #include<filesystem>
 #include<fstream>
 
@@ -14,12 +15,15 @@ LOADMusic& LOADMusic::Instance()
 std::experimental::generator<std::wstring> LOADMusic::LoadsFile()
 {
     fs::path currentPath = fs::current_path();
-    std::string dirFile = currentPath.string() + "\\Music_Directory.txt";
+    std::wstring dirFile = currentPath.wstring() + L"\\" + Settings::Instance().GetConfigurationAddress();
+    //MessageBoxW(NULL, dirFile.c_str(), L"info", MB_OK);
     std::wifstream fileLoad(dirFile);
-    size_t index = listMusic.size();
+    //size_t index = listMusic.size();
+    size_t index = 1;
 
     if (!fileLoad.is_open())
     {
+        MessageBoxW(NULL, (L"Could not read " + dirFile).c_str(), L"Error", MB_OK | MB_ICONERROR);
         co_return;
     }
 
@@ -34,7 +38,6 @@ std::experimental::generator<std::wstring> LOADMusic::LoadsFile()
         listMusic.push_back(directory);
 
         index = listMusic.size();
-
         co_yield line;
     }
 
@@ -43,6 +46,7 @@ std::experimental::generator<std::wstring> LOADMusic::LoadsFile()
 
 void LOADMusic::StartAsyncLoad()
 {
+    listMusic.clear();
     loadFile = LoadsFile();
     genLoadFileIt = loadFile.begin();
     loading = true;
@@ -67,3 +71,24 @@ bool LOADMusic::IsLoadDone() const
 {
     return !loading;
 }
+
+LOADMusic* LOADMusic_Instance()
+{
+    return &LOADMusic::Instance();
+}
+
+void LOADMusic_StartAsyncLoad()
+{
+    LOADMusic::Instance().StartAsyncLoad();
+}
+
+void LOADMusic_UpdateAsyncLoad()
+{
+    LOADMusic::Instance().UpdateAsyncLoad();
+}
+
+bool LOADMusic_IsLoadDone()
+{
+    return LOADMusic::Instance().IsLoadDone();
+}
+

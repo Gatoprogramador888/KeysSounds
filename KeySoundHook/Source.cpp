@@ -1,5 +1,6 @@
 #include "Header.h"
 #include "SoundSystem.h"
+#include "Settings.h"
 #include <windows.h>
 #include <mmsystem.h>
 #include "LOADMusic.h"
@@ -22,7 +23,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
 
         if (wParam == WM_KEYDOWN)
         {
-            Sound::Instance().Play(Sound::Instance().RandomSound());
+            Sound::Instance().Play();
         }
 
         if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
@@ -113,7 +114,7 @@ void StartAsyncLoadTimer()
 
 // Punto de entrada WinAPI
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hprev, LPSTR lpstr, int cshow) {
-
+    Settings::Instance().ReadSettings();
     StartAsyncLoadTimer();
 
     //Crear el evento

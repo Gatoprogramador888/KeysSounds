@@ -44,26 +44,46 @@ bool AddToStartup(const std::wstring& appName, const std::wstring& appPath)
     return result == ERROR_SUCCESS;
 }
 
-void CreateFileMusic()
+void CreateInstallerStructure()
 {
-    std::filesystem::path pathOrigin = fs::current_path();
-    std::filesystem::path pathFile = pathOrigin / "Music_Directory.txt";
-    std::filesystem::path pathMusic = pathOrigin / "Music";
-    std::wofstream file(pathFile);
     try {
-        if (!fs::exists(pathMusic) || !fs::is_directory(pathMusic)) {
-            MessageBoxW(NULL, L"The directory does not exist or is invalid", L"Error", MB_OK | MB_ICONERROR);
-            return;
+        fs::path pathOrigin = fs::current_path();
+
+        // Carpetas principales
+        fs::path pathAssetsMusic = pathOrigin / L"assets" / L"music";
+        fs::path pathConfigSettings = pathOrigin / L"config" / L"settings";
+        fs::path pathConfigMusic = pathOrigin / L"config" / L"music";
+
+        // Crear carpetas
+        fs::create_directories(pathAssetsMusic);
+        fs::create_directories(pathConfigSettings);
+        fs::create_directories(pathConfigMusic);
+
+        // Archivos necesarios
+        fs::path musicDirectoryFile = pathConfigMusic / L"Music_Directory.txt";
+        fs::path settingsFile = pathConfigSettings / L"Settings.txt";
+        fs::path mainConfigFile = pathConfigSettings / L"MainConfiguration.txt";
+
+        // Crear Music_Directory.txt vacío si no existe
+        if (!fs::exists(musicDirectoryFile))
+        {
+            std::wofstream file(musicDirectoryFile);
+            file << L""; // Inicial vacío
         }
 
-        for (const auto& entry : fs::directory_iterator(pathMusic)) {
-            if (fs::is_regular_file(entry.path())) {
-                file << entry.path().filename().wstring() << L"\n";
-            }
+        // Escribir "Music_Directory" en Settings.txt y MainConfiguration.txt
+        {
+            std::wofstream settings(settingsFile);
+            settings << L"Music_Directory\n";
         }
+        {
+            std::wofstream mainConfig(mainConfigFile);
+            mainConfig << L"Music_Directory\n";
+        }
+
     }
     catch (const fs::filesystem_error& e) {
-        MessageBox(NULL, e.what(), "Error", MB_OK | MB_ICONERROR);
+        MessageBoxA(NULL, e.what(), "Filesystem Error", MB_OK | MB_ICONERROR);
     }
 }
 
@@ -142,7 +162,7 @@ int main()
 
 
     //CREAR ARCHIVOS 
-    CreateFileMusic();
+    CreateInstallerStructure();
 
     return 0;
 }

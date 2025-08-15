@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "SAVEMusic.h"
+#include "Settings.h"
 #include<filesystem>
 #include<fstream>
 
@@ -9,7 +10,7 @@ namespace fs = std::filesystem;
 std::experimental::generator<std::wstring> SAVEMusic::SavesFile()
 {
 	fs::path currentPath = fs::current_path();
-	std::string dirFile = currentPath.string() + "\\Music_Directory.txt";
+	std::wstring dirFile = currentPath.wstring() + L"\\" + Settings::Instance().GetMainConfigurationAddress();
 	std::wofstream fileSave(dirFile);
 
 	if (!fileSave.is_open())
