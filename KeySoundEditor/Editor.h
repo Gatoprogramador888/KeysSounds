@@ -299,18 +299,6 @@ namespace KeySoundEditor {
 			this->panel1->ResumeLayout(false);
 			this->panel1->PerformLayout();
 			this->ResumeLayout(false);
-			//
-			//OFN
-			//
-			searchSound->Filter = "sound file (*.wav)|*.wav";
-			searchSound->FilterIndex = 1;
-			searchSound->RestoreDirectory = true;
-			//
-			//FBD
-			//
-			searchFolder = gcnew System::Windows::Forms::FolderBrowserDialog();
-			searchFolder->Description = "sounds folder";
-			searchFolder->ShowNewFolderButton = false;
 
 
 		}
