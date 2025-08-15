@@ -154,13 +154,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DinamycListMusic.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Header.h" />
     <ClInclude Include="LOADMusic.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SAVEMusic.h" />
+    <ClInclude Include="Settings.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DinamycListMusic.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Header.cpp" />
     <ClCompile Include="LOADMusic.cpp" />
@@ -171,6 +174,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SAVEMusic.cpp" />
+    <ClCompile Include="Settings.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

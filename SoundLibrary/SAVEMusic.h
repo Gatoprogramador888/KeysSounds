@@ -35,3 +35,23 @@ public:
 private:
     SAVEMusic() = default;
 };
+
+
+/*CONSUMIBLES DESDE OTROS LENGUAJES COMO DLL*/
+extern "C" {
+    MUSIC_API SAVEMusic* SAVEMusic_Instance() {
+        return &SAVEMusic::Instance();
+    }
+
+    MUSIC_API void SAVEMusic_StartAsyncSave() {
+        SAVEMusic::Instance().StartAsyncSave();
+    }
+
+    MUSIC_API void SAVEMusic_UpdateAsyncSave() {
+        SAVEMusic::Instance().UpdateAsyncSave();
+    }
+
+    MUSIC_API bool SAVEMusic_IsSaveDone() {
+        return SAVEMusic::Instance().IsSaveDone();
+    }
+}

@@ -31,4 +31,15 @@ public:
 
 };
 
+/*CONSUMIBLES DESDE OTROS LENGUAJES COMO DLL*/
+extern "C" {
 
+    MUSIC_API LOADMusic* LOADMusic_Instance(); 
+
+    MUSIC_API void LOADMusic_StartAsyncLoad(); 
+
+    MUSIC_API void LOADMusic_UpdateAsyncLoad(); 
+
+    MUSIC_API bool LOADMusic_IsLoadDone(); 
+
+}

@@ -37,8 +37,9 @@ struct DIR
 extern MUSIC_API std::vector<DIR> listMusic;
 
 // Funciones de conversión exportadas
-MUSIC_API std::wstring StringToWString(const std::string& str);
-MUSIC_API std::string WStringToString(const std::wstring& wstr);
+extern "C" MUSIC_API const wchar_t* StringToWString(const std::string & str);
+extern "C" MUSIC_API const char* WStringToString(const std::wstring & wstr);
+
 
 // Si quieres dejar funciones auxiliares estáticas internas, las puedes dejar sin exportar
 static std::wstring SStringToWString(const std::string& str)
@@ -59,33 +60,34 @@ static std::string SWStringToString(const std::wstring& wstr)
     return strTo;
 }
 
+/*
+OPENFILENAME
 
-//OPENFILENAME
 
 static std::wstring OpenFileDialog()
 {
-    OPENFILENAME ofn = {};
-    CHAR szFile[260] = {};
+    OPENFILENAMEW ofn = {0};
+    LPWSTR szFile = {};
     ofn.lStructSize = sizeof(ofn);
     ofn.hwndOwner = NULL;
     ofn.lpstrFile = szFile;
     ofn.nMaxFile = sizeof(szFile);
-    ofn.lpstrFilter = "Archivos de Música\0*.wav\0Todos los archivos\0*.*\0";
+    ofn.lpstrFilter = L"Archivos de Música\0*.wav\0";
     ofn.nFilterIndex = 1;
     ofn.lpstrFileTitle = nullptr;
     ofn.nMaxFileTitle = 0;
     ofn.lpstrInitialDir = nullptr;
     ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 
-    if (GetOpenFileNameA(&ofn)) {
-        std::string file(ofn.lpstrFile);
-        std::wstring wfile = SStringToWString(file);
+    if (GetOpenFileNameW(&ofn)) {
+        //std::string file(ofn.lpstrFile);
+        std::wstring wfile = ofn.lpstrFile;//SStringToWString(file);
         return wfile;
     }
     return std::wstring(); // vacío si cancelado
-}
+}*/
 
-static std::wstring OpenFileDialog(HWND hwnd)
+/*static std::wstring OpenFileDialog(HWND hwnd)
 {
     OPENFILENAME ofn = {};
     CHAR szFile[260] = {};
@@ -106,4 +108,4 @@ static std::wstring OpenFileDialog(HWND hwnd)
         return wfile;
     }
     return std::wstring(); // vacío si cancelado
-}
+}*/

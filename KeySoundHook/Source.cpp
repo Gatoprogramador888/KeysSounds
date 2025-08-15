@@ -1,5 +1,6 @@
 #include "Header.h"
 #include "SoundSystem.h"
+#include "Settings.h"
 #include <windows.h>
 #include <mmsystem.h>
 #include "LOADMusic.h"
@@ -113,7 +114,7 @@ void StartAsyncLoadTimer()
 
 // Punto de entrada WinAPI
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hprev, LPSTR lpstr, int cshow) {
-
+    Settings::Instance().ReadSettings();
     StartAsyncLoadTimer();
 
     //Crear el evento
