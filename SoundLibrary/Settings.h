@@ -14,7 +14,7 @@ private:
 	const std::wstring dirConfig = L"..\\config\\";
 	const std::wstring dirSettings = dirConfig + L"settings\\";
 	const std::wstring dirSettingsMusic = dirConfig + L"music\\";
-	const std::wstring dirMainConfiguration = dirSettingsMusic + L"MainConfiguration.txt"; 
+	const std::wstring dirMainConfiguration = dirSettings + L"MainConfiguration.txt"; 
 	const std::wstring dirSettingsTxt = dirSettings + L"Settings.txt";          
 	const std::wstring dirMusicDirectory = dirSettingsMusic + L"Music_Directory.txt";     
 	const std::wstring dirMusics = L"..\\assets\\music\\";

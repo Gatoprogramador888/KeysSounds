@@ -14,7 +14,9 @@ LOADMusic& LOADMusic::Instance()
 
 std::experimental::generator<std::wstring> LOADMusic::LoadsFile()
 {
-    fs::path currentPath = fs::current_path();
+    wchar_t exePath[MAX_PATH];
+    GetModuleFileNameW(NULL, exePath, MAX_PATH);
+    fs::path currentPath = fs::path(exePath).parent_path();
     std::wstring dirFile = currentPath.wstring() + L"\\" + Settings::Instance().GetConfigurationAddress();
     //MessageBoxW(NULL, dirFile.c_str(), L"info", MB_OK);
     std::wifstream fileLoad(dirFile);

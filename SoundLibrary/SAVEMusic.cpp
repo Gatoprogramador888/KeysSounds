@@ -9,12 +9,14 @@ namespace fs = std::filesystem;
 
 std::experimental::generator<std::wstring> SAVEMusic::SavesFile()
 {
-	fs::path currentPath = fs::current_path();
-	std::wstring dirFile = currentPath.wstring() + L"\\" + Settings::Instance().GetMainConfigurationAddress();
-	std::wofstream fileSave(dirFile);
+	wchar_t exePath[MAX_PATH];
+	GetModuleFileNameW(NULL, exePath, MAX_PATH);
+	fs::path dir = fs::path(exePath).parent_path() / Settings::Instance().GetMainConfigurationAddress();
+	std::wofstream fileSave(dir);
 
 	if (!fileSave.is_open())
 	{
+		MessageBoxW(NULL, (L"Could not read " + dir.wstring()).c_str(), L"Error", MB_OK | MB_ICONERROR);
 		co_return;
 	}
 

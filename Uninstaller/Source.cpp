@@ -60,7 +60,10 @@ int main() {
     }
 
     // 1. Terminar KeySoundHook si está activo
-    NotifyAppToStop(EVENT_NAME);
+    if (!NotifyAppToStop(EVENT_NAME))
+    {
+        MessageBoxA(NULL, "KeySoundHook no está corriendo, se continuará con la desinstalación.", "Info", MB_OK);
+    }
 
     // 2. Eliminar la clave de inicio
     if (DeleteStartupKey(L"KeySoundHook"))

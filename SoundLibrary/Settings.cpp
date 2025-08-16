@@ -15,9 +15,15 @@ Settings& Settings::Instance()
 
 std::wstring Settings::MainConfiguration()
 {
-    fs::path currentPath = fs::current_path();
-    std::wstring dir = currentPath.wstring() + L"\\" + dirMainConfiguration;
+    wchar_t exePath[MAX_PATH];
+    GetModuleFileNameW(NULL, exePath, MAX_PATH);
+    fs::path currentPath = fs::path(exePath).parent_path();
+    std::wstring dir = currentPath / dirMainConfiguration;
     std::wifstream config(dir);
+    if (!config.is_open())
+    {
+        MessageBoxW(NULL, (L"Could not read " + dir).c_str(), L"Error", MB_OK | MB_ICONERROR);
+    }
     std::wstring line, retorno;
     while (std::getline(config, line))
     {
@@ -58,7 +64,10 @@ void Settings::SetMainConfiguration(std::wstring configuration)
 void Settings::AddConfiguration(std::wstring configuration)
 {
     configurations.push_back(configuration);
-    std::wofstream archivo(dirMusics + configuration + wextension); // Abre el archivo en modo escritura
+    wchar_t exePath[MAX_PATH];
+    GetModuleFileNameW(NULL, exePath, MAX_PATH);
+    fs::path dir = fs::path(exePath).parent_path() / (dirMusics + configuration + wextension);
+    std::wofstream archivo(dir); // Abre el archivo en modo escritura
 
     if (archivo.is_open()) {
         std::cout << "Archivo creado exitosamente." << std::endl;
@@ -74,7 +83,12 @@ void Settings::DeleteConfiguration(std::wstring configuration)
 {
     auto it = std::find(configurations.begin(), configurations.end() ,configuration);
     configurations.erase(it);
-    if (_wremove((dirMusics + configuration + wextension).c_str()) != 0)
+    
+    wchar_t exePath[MAX_PATH];
+    GetModuleFileNameW(NULL, exePath, MAX_PATH);
+    fs::path dir = fs::path(exePath).parent_path() / (dirMusics + configuration + wextension);
+
+    if (_wremove(dir.c_str()) != 0)
     {
         std::cerr << "The file could not be deleted\n";
     }
@@ -83,7 +97,10 @@ void Settings::DeleteConfiguration(std::wstring configuration)
 
 void Settings::SavedSettings()
 {
-    std::wofstream config(dirSettingsTxt);
+    wchar_t exePath[MAX_PATH];
+    GetModuleFileNameW(NULL, exePath, MAX_PATH);
+    fs::path dir = fs::path(exePath).parent_path() / dirSettingsTxt;
+    std::wofstream config(dir);
     for (size_t i = 0; i < configurations.size(); i++)
     {
         try

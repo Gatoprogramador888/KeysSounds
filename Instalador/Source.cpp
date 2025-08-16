@@ -105,20 +105,28 @@ int main()
         return 1;
     }
 
-
+    std::wstring bin = L"bin", installer = L"installer";
     fs::path installPath = fs::path(programFilesPath) / L"KeySoundProject";
+    fs::path iBinPath = installPath / bin;
+    fs::path iInstallerPath = installPath / installer;
+
     fs::create_directories(installPath);
+    fs::create_directories(iBinPath);
+    fs::create_directories(iInstallerPath);
 
     // 2️⃣ Copiar bin, assets, config al destino
     fs::path releasePath = fs::current_path().parent_path();
-    CopyDirectory(releasePath / L"bin", installPath);
-    CopyDirectory(releasePath / L"installer", installPath);
+    fs::path rBinPath = releasePath / bin;
+    fs::path rInstallerPath = releasePath / installer;
+
+    CopyDirectory(rBinPath, iBinPath);
+    CopyDirectory(rInstallerPath, iInstallerPath);
 
     // 3️⃣ Crear estructura de archivos vacía si faltan
     CreateInstallerStructure(installPath);
 
     // 4️⃣ Agregar KeySoundHook.exe al inicio
-    fs::path keyHookExe = installPath / L"bin\\KeySoundHook.exe";
+    fs::path keyHookExe = iBinPath / L"KeySoundHook.exe";
     if (!AddToStartup(L"KeySoundHook", keyHookExe.wstring()))
         MessageBoxW(NULL, L"Could not add KeySoundHook to startup", L"Error", MB_OK | MB_ICONERROR);
 
@@ -131,7 +139,7 @@ int main()
     }
 
     fs::path shortcutPath = fs::path(desktopPath) / L"KeySoundEditor.lnk";
-    fs::path editorExe = installPath / L"bin\\KeySoundEditor.exe";
+    fs::path editorExe = iBinPath / L"KeySoundEditor.exe";
 
     if (!CreateShortcut(editorExe.c_str(), shortcutPath.c_str(), L"Direct access to KeySoundEditor"))
         MessageBoxA(NULL, "Could not create shortcut.", "Error", MB_OK | MB_ICONERROR);
