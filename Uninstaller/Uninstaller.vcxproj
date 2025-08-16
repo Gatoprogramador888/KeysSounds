@@ -143,7 +143,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalManifestDependencies>%(AdditionalManifestDependencies)</AdditionalManifestDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
-      <UACUIAccess>true</UACUIAccess>
+      <UACUIAccess>false</UACUIAccess>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -6,6 +6,7 @@
 #include <strsafe.h>
 #include <ShlObj.h>
 #include <knownfolders.h>
+#include <tlhelp32.h>
 
 namespace fs = std::filesystem;
 
@@ -36,12 +37,30 @@ bool DeleteFolderRecursively(const fs::path& folderPath) {
 }
 
 // Señalizar a la aplicación para que cierre
-bool NotifyAppToStop(const wchar_t* eventName) {
+/*bool NotifyAppToStop(const wchar_t* eventName) {
     HANDLE hStopEvent = OpenEventW(EVENT_MODIFY_STATE, FALSE, eventName);
     if (!hStopEvent) return false;
     SetEvent(hStopEvent);
     CloseHandle(hStopEvent);
     return true;
+}*/
+
+void KillProcessByName(const wchar_t* name) {
+    HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    PROCESSENTRY32 pe;
+    pe.dwSize = sizeof(PROCESSENTRY32);
+    if (Process32First(hSnap, &pe)) {
+        do {
+            if (_wcsicmp(pe.szExeFile, name) == 0) {
+                HANDLE hProc = OpenProcess(PROCESS_TERMINATE, FALSE, pe.th32ProcessID);
+                if (hProc) {
+                    TerminateProcess(hProc, 0);
+                    CloseHandle(hProc);
+                }
+            }
+        } while (Process32Next(hSnap, &pe));
+    }
+    CloseHandle(hSnap);
 }
 
 // Eliminar acceso directo
@@ -59,11 +78,23 @@ int main() {
         return 0;
     }
 
-    // 1. Terminar KeySoundHook si está activo
-    if (!NotifyAppToStop(EVENT_NAME))
-    {
-        MessageBoxA(NULL, "KeySoundHook no está corriendo, se continuará con la desinstalación.", "Info", MB_OK);
-    }
+    // 3. Obtener carpeta principal del programa
+    wchar_t path[MAX_PATH];
+    GetModuleFileNameW(NULL, path, MAX_PATH);
+    fs::path mainFolder = fs::path(path).parent_path();
+    fs::path ant = fs::path("..");
+
+    // 4. Carpetas según diagrama
+    fs::path folderBin = mainFolder /  ant / L"bin";
+    fs::path folderAssets = mainFolder / ant / L"assets";
+    fs::path folderConfig = mainFolder /  ant / L"config";
+    fs::path folderInstaller = mainFolder / L"installer";
+
+    KillProcessByName(L"KeySoundHook.exe");
+    KillProcessByName(L"KeySoundEditor.exe");
+
+    const int sleep = 1000;
+    Sleep(sleep);
 
     // 2. Eliminar la clave de inicio
     if (DeleteStartupKey(L"KeySoundHook"))
@@ -71,23 +102,14 @@ int main() {
     else
         std::wcout << L"Startup key not found or could not delete\n";
 
-    // 3. Obtener carpeta principal del programa
-    wchar_t path[MAX_PATH];
-    GetModuleFileNameW(NULL, path, MAX_PATH);
-    fs::path mainFolder = fs::path(path).parent_path();
-
-    // 4. Carpetas según diagrama
-    fs::path folderBin = mainFolder / L"bin";
-    fs::path folderAssets = mainFolder / L"assets";
-    fs::path folderConfig = mainFolder / L"config";
-    fs::path folderInstaller = mainFolder / L"installer";
-
+    Sleep(sleep);
     // 5. Eliminar carpetas
     DeleteFolderRecursively(folderBin);
     DeleteFolderRecursively(folderAssets);
     DeleteFolderRecursively(folderConfig);
     DeleteFolderRecursively(folderInstaller);
 
+    Sleep(sleep);
     // 6. Eliminar posibles accesos directos del escritorio
     wchar_t desktopPath[MAX_PATH];
     if (SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_DESKTOPDIRECTORY, NULL, 0, desktopPath))) {
