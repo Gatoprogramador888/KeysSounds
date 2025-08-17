@@ -78,6 +78,7 @@ namespace KeySoundEditor {
 		String^ previous_selection;
 		String^ DEFAULT = gcnew String(L"");
 		int timeSleep = 16;
+		const wchar_t* KeySoundHook = L"KeySoundHook.exe";
 		
 	private:
 		void InitializeClass()
@@ -319,6 +320,12 @@ namespace KeySoundEditor {
 		{
 			String^ seleccion = Configs->Text;
 			wrapperSettings->SetMainConfiguration(seleccion);
+			size_t size = wcstombs(nullptr, KeySoundHook, 0) + 1;
+			char* CKeySoundHook = new char[size];
+			wcstombs(CKeySoundHook, KeySoundHook, size);
+			system(CKeySoundHook);
+			delete[] CKeySoundHook;
+			MessageBox::Show("Close the program");
 		}
 
 		private: System::Void BTN_RF_Click(System::Object^ sender, System::EventArgs^ e)
@@ -426,6 +433,7 @@ namespace KeySoundEditor {
 				savedTimer->Stop();
 				MessageBox::Show("saved sounds");
 				BTN_SAVED->Text = "SAVED";
+				MessageBox::Show("Press ACCEPT to restart the key program.");
 			}
 
 		}
