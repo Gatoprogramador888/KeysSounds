@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <iostream>
 
 namespace fs = std::filesystem;
 
@@ -145,6 +146,44 @@ int main()
         MessageBoxA(NULL, "Could not create shortcut.", "Error", MB_OK | MB_ICONERROR);
 
     MessageBoxA(NULL, "Installation completed successfully!", "Installer", MB_OK | MB_ICONINFORMATION);
+
+    //Borrar el installer actual
+    fs::path currentInstallerFolder = fs::current_path();
+
+    // Nombres de las carpetas a eliminar alrededor del instalador
+    std::vector<fs::path> foldersToDelete = {
+        currentInstallerFolder.parent_path() / L"bin",
+        currentInstallerFolder
+    };
+
+    // Crear batch temporal
+    wchar_t tempPath[MAX_PATH];
+    GetTempPathW(MAX_PATH, tempPath);
+    fs::path batFile = fs::path(tempPath) / L"deleteProject.bat";
+    std::cout << "Erasing in " << batFile << std::endl;
+    std::wofstream bat(batFile);
+
+    // Cabecera
+    bat << L"@echo off\n";
+    bat << L"ping 127.0.0.1 -n 2 > nul\n"; // espera ~2 seg
+
+    // Agregar cada carpeta para borrarla
+    for (auto& folder : foldersToDelete)
+    {
+        std::cout << "Erasing in " << folder << std::endl;
+        bat << L"rmdir /s /q \"" << folder.wstring() << L"\"\n";
+    }
+
+    // Finalmente borrar la carpeta del instalador y el propio batch
+    bat << L"rmdir /s /q \"" << currentInstallerFolder.parent_path().wstring() << L"\"\n";
+    std::cout << "Erasing in " << currentInstallerFolder.parent_path() << std::endl;
+    bat << L"del \"%~f0\"\n"; // se borra a sí mismo
+    bat.close();
+    std::cin.ignore();
+
+    // Ejecutar el batch de forma oculta
+    ShellExecuteW(NULL, L"open", batFile.c_str(), NULL, NULL, SW_HIDE);
+
     return 0;
 }
 

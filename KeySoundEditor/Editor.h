@@ -4,6 +4,7 @@
 #include "SavedWrapper.h"
 #include "WrapperSettings.h"
 #include "Creation Configuration.h"
+//#include "Process.h"
 #include <string>
 #include <filesystem>
 #include <vector>
@@ -78,7 +79,7 @@ namespace KeySoundEditor {
 		String^ previous_selection;
 		String^ DEFAULT = gcnew String(L"");
 		int timeSleep = 16;
-		const wchar_t* KeySoundHook = L"KeySoundHook.exe";
+		bool saved = true;
 		
 	private:
 		void InitializeClass()
@@ -250,7 +251,6 @@ namespace KeySoundEditor {
 			this->Configs->Name = L"Configs";
 			this->Configs->Size = System::Drawing::Size(165, 28);
 			this->Configs->TabIndex = 8;
-			this->Configs->Text = L"";
 			this->Configs->SelectedIndexChanged += gcnew System::EventHandler(this, &Editor::Configs_SelectedIndexChanged);
 			// 
 			// BTN_ADDCO
@@ -281,6 +281,7 @@ namespace KeySoundEditor {
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+			this->AutoSize = true;
 			this->BackColor = System::Drawing::Color::MidnightBlue;
 			this->ClientSize = System::Drawing::Size(978, 744);
 			this->Controls->Add(this->BTN_DELCON);
@@ -296,11 +297,11 @@ namespace KeySoundEditor {
 			this->Controls->Add(this->ListMusic);
 			this->Name = L"Editor";
 			this->Text = L"Editor";
+			this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &Editor::Editor_FormClosing);
 			this->Load += gcnew System::EventHandler(this, &Editor::Editor_Load);
 			this->panel1->ResumeLayout(false);
 			this->panel1->PerformLayout();
 			this->ResumeLayout(false);
-
 
 		}
 #pragma endregion
@@ -308,6 +309,7 @@ namespace KeySoundEditor {
 			//Buttons
 		private: System::Void BTN_SAVED_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
+			saved = true;
 			savedTimer = gcnew System::Windows::Forms::Timer();
 			savedTimer->Interval = timeSleep; // milisegundos (0.5 seg)
 			savedTimer->Tick += gcnew System::EventHandler(this, &Editor::OnSavedTick);
@@ -320,12 +322,7 @@ namespace KeySoundEditor {
 		{
 			String^ seleccion = Configs->Text;
 			wrapperSettings->SetMainConfiguration(seleccion);
-			size_t size = wcstombs(nullptr, KeySoundHook, 0) + 1;
-			char* CKeySoundHook = new char[size];
-			wcstombs(CKeySoundHook, KeySoundHook, size);
-			system(CKeySoundHook);
-			delete[] CKeySoundHook;
-			MessageBox::Show("Close the program");
+			this->Close();
 		}
 
 		private: System::Void BTN_RF_Click(System::Object^ sender, System::EventArgs^ e)
@@ -333,6 +330,7 @@ namespace KeySoundEditor {
 			ReadFolderConvertToWav();
 			MessageBox::Show("Reading of the folder is finished");
 			BTN_SAVED->Text = "SAVED*";
+			saved = false;
 		}
 
 		private: System::Void BTN_ADD_Click(System::Object^ sender, System::EventArgs^ e) 
@@ -343,11 +341,13 @@ namespace KeySoundEditor {
 
 			ListMusic->Items->Add(file);
 			BTN_SAVED->Text = "SAVED*";
+			saved = false;
 		}
 
 		private: System::Void BTN_DELETE_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
 			if (IsRemove("Do you want to delete?") == -1)return;
+			saved = false;
 		}
 
 		private: System::Void BTN_MODIFY_Click(System::Object^ sender, System::EventArgs^ e)
@@ -362,6 +362,7 @@ namespace KeySoundEditor {
 			if (FolderOrSoundIsEmpty(file))return;
 			
 			ListMusic->Items->Insert(index, file);
+			saved = false;
 		}
 
 		private: System::Void BTN_ADDCO_Click(System::Object^ sender, System::EventArgs^ e)
@@ -400,6 +401,7 @@ namespace KeySoundEditor {
 
 		private: System::Void Editor_Load(System::Object^ sender, System::EventArgs^ e) 
 		{
+			//Process::KillProcessByName(KEYSOUNDHOOK);
 			int count = wrapperSettings->GetSettings()->Count;
 			for (int i = 0; i < count; i++)
 			{
@@ -586,6 +588,25 @@ namespace KeySoundEditor {
 			return wstr;
 		}
 
+private: System::Void Editor_FormClosing(System::Object^ sender, System::Windows::Forms::FormClosingEventArgs^ e) 
+{
+	if (!saved)
+	{
+		System::Windows::Forms::DialogResult result =
+			System::Windows::Forms::MessageBox::Show(
+				"Do you want to continue without saving?",
+				"Confirm closure",
+				System::Windows::Forms::MessageBoxButtons::YesNo,
+				System::Windows::Forms::MessageBoxIcon::Warning
+			);
+
+		if (result == System::Windows::Forms::DialogResult::No) {
+			e->Cancel = true;
+		}
+	}
+
+	//Process::StartProcessByName(KEYSOUNDHOOK);
+}
 };
 
 }

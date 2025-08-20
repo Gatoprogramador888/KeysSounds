@@ -3,10 +3,8 @@
 #include <fstream>
 #include <filesystem>
 #include <iostream>
-#include <strsafe.h>
 #include <ShlObj.h>
-#include <knownfolders.h>
-#include <tlhelp32.h>
+#include "Process.h"
 
 namespace fs = std::filesystem;
 
@@ -30,38 +28,28 @@ bool DeleteStartupKey(const wchar_t* entryName) {
 }
 
 // Eliminar una carpeta de manera recursiva
-bool DeleteFolderRecursively(const fs::path& folderPath) {
+void DeleteFolderRecursively(const fs::path& folderPath) {
     std::error_code errorCode;
     fs::remove_all(folderPath, errorCode);
-    return !errorCode;
-}
-
-// Señalizar a la aplicación para que cierre
-/*bool NotifyAppToStop(const wchar_t* eventName) {
-    HANDLE hStopEvent = OpenEventW(EVENT_MODIFY_STATE, FALSE, eventName);
-    if (!hStopEvent) return false;
-    SetEvent(hStopEvent);
-    CloseHandle(hStopEvent);
-    return true;
-}*/
-
-void KillProcessByName(const wchar_t* name) {
-    HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-    PROCESSENTRY32 pe;
-    pe.dwSize = sizeof(PROCESSENTRY32);
-    if (Process32First(hSnap, &pe)) {
-        do {
-            if (_wcsicmp(pe.szExeFile, name) == 0) {
-                HANDLE hProc = OpenProcess(PROCESS_TERMINATE, FALSE, pe.th32ProcessID);
-                if (hProc) {
-                    TerminateProcess(hProc, 0);
-                    CloseHandle(hProc);
-                }
-            }
-        } while (Process32Next(hSnap, &pe));
+    if (errorCode)
+    {
+        std::cout << "The folder " << folderPath << " could not be deleted\n";
     }
-    CloseHandle(hSnap);
 }
+
+void DeleteFolderInstaller(const fs::path folderPath)
+{
+    std::error_code errorCode;
+    for (const auto& file : fs::directory_iterator(folderPath))
+    {
+        fs::remove(file, errorCode);
+        if (errorCode)
+        {
+            std::cout << "The file " << folderPath << " could not be deleted\n";
+        }
+    }
+}
+
 
 // Eliminar acceso directo
 bool DeleteShortcut(const fs::path& shortcutPath) {
@@ -82,16 +70,16 @@ int main() {
     wchar_t path[MAX_PATH];
     GetModuleFileNameW(NULL, path, MAX_PATH);
     fs::path mainFolder = fs::path(path).parent_path();
-    fs::path ant = fs::path("..");
+    //fs::path ant = fs::path("..");
 
     // 4. Carpetas según diagrama
-    fs::path folderBin = mainFolder /  ant / L"bin";
-    fs::path folderAssets = mainFolder / ant / L"assets";
-    fs::path folderConfig = mainFolder /  ant / L"config";
-    fs::path folderInstaller = mainFolder / L"installer";
+    fs::path folderBin = mainFolder.parent_path() / L"bin";
+    fs::path folderAssets = mainFolder.parent_path() / L"assets";
+    fs::path folderConfig = mainFolder.parent_path() / L"config";
+    //fs::path folderInstaller = mainFolder;// / L"installer";
 
-    KillProcessByName(L"KeySoundHook.exe");
-    KillProcessByName(L"KeySoundEditor.exe");
+    Process::KillProcessByName(KEYSOUNDHOOK);
+    Process::KillProcessByName(KEYSOUNDEDITOR);
 
     const int sleep = 1000;
     Sleep(sleep);
@@ -107,7 +95,7 @@ int main() {
     DeleteFolderRecursively(folderBin);
     DeleteFolderRecursively(folderAssets);
     DeleteFolderRecursively(folderConfig);
-    DeleteFolderRecursively(folderInstaller);
+    DeleteFolderInstaller(mainFolder);
 
     Sleep(sleep);
     // 6. Eliminar posibles accesos directos del escritorio
@@ -121,6 +109,40 @@ int main() {
     std::cin.get();
 
     std::wcout << L"Press any key to finish the uninstallation.\n";
+    
 
+    //Eliminar los restos
+    // Carpeta principal KeySoundProject
+    fs::path projectFolder = mainFolder.parent_path(); // ajusta según la estructura
+    fs::path installerFolder = mainFolder;
+
+    // Crear batch temporal para borrar todo
+    wchar_t tempPath[MAX_PATH];
+    GetTempPathW(MAX_PATH, tempPath);
+    fs::path batFile = fs::path(tempPath) / L"deleteProject.bat";
+    std::cout << "Erasing in " << batFile << std::endl;
+    std::cout << "Erasing in " << mainFolder << std::endl;
+    std::cout << "Erasing in " << projectFolder << std::endl;
+    std::wofstream bat(batFile);
+
+    bat << L"@echo off\n";
+    //bat << L":loop\n";
+    //bat << L"tasklist | findstr /i \"Uninstaller.exe\" > nul\n";
+    //bat << L"if %errorlevel%==0 (\n";
+    //bat << L"    ping 127.0.0.1 -n 2 > nul\n"; 
+    //bat << L"    goto loop\n";
+    //bat << L")\n";
+    //bat << L":check\n";
+    //bat << L"rmdir /s /q \"" << projectFolder.wstring() << L"\"\n";
+    //bat << L"if exist \"" << projectFolder.wstring() << L"\" (\n";
+    bat << L"    ping 127.0.0.1 -n 5 > nul\n";
+    bat << L"rmdir /s /q \"" << projectFolder.wstring() << L"\"\n";
+    //bat << L"    goto check\n";
+    //bat << L")\n";
+    bat << L"del \"%~f0\"\n";
+    bat.close();
+    MessageBoxA(NULL, "Please close the window where the project is located", "Info", MB_OK | MB_ICONINFORMATION);
+    // Ejecutar batch de forma oculta
+    ShellExecuteW(NULL, L"runas", batFile.c_str(), NULL, NULL, SW_HIDE);
     return 0;
 }
