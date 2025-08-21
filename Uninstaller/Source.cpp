@@ -95,7 +95,7 @@ int main() {
     DeleteFolderRecursively(folderBin);
     DeleteFolderRecursively(folderAssets);
     DeleteFolderRecursively(folderConfig);
-    DeleteFolderInstaller(mainFolder);
+    //DeleteFolderInstaller(mainFolder);
 
     Sleep(sleep);
     // 6. Eliminar posibles accesos directos del escritorio
@@ -104,45 +104,11 @@ int main() {
         DeleteShortcut(fs::path(desktopPath) / L"KeySoundEditor.lnk");
     }
 
+    std::wcout << L"Go to uninstaller and press execute to finish.\n";
+    Sleep(5000);
     std::wcout << L"Uninstallation completed. Press any key to exit.\n";
     std::cin.ignore();
     std::cin.get();
-
-    std::wcout << L"Press any key to finish the uninstallation.\n";
     
-
-    //Eliminar los restos
-    // Carpeta principal KeySoundProject
-    fs::path projectFolder = mainFolder.parent_path(); // ajusta según la estructura
-    fs::path installerFolder = mainFolder;
-
-    // Crear batch temporal para borrar todo
-    wchar_t tempPath[MAX_PATH];
-    GetTempPathW(MAX_PATH, tempPath);
-    fs::path batFile = fs::path(tempPath) / L"deleteProject.bat";
-    std::cout << "Erasing in " << batFile << std::endl;
-    std::cout << "Erasing in " << mainFolder << std::endl;
-    std::cout << "Erasing in " << projectFolder << std::endl;
-    std::wofstream bat(batFile);
-
-    bat << L"@echo off\n";
-    //bat << L":loop\n";
-    //bat << L"tasklist | findstr /i \"Uninstaller.exe\" > nul\n";
-    //bat << L"if %errorlevel%==0 (\n";
-    //bat << L"    ping 127.0.0.1 -n 2 > nul\n"; 
-    //bat << L"    goto loop\n";
-    //bat << L")\n";
-    //bat << L":check\n";
-    //bat << L"rmdir /s /q \"" << projectFolder.wstring() << L"\"\n";
-    //bat << L"if exist \"" << projectFolder.wstring() << L"\" (\n";
-    bat << L"    ping 127.0.0.1 -n 5 > nul\n";
-    bat << L"rmdir /s /q \"" << projectFolder.wstring() << L"\"\n";
-    //bat << L"    goto check\n";
-    //bat << L")\n";
-    bat << L"del \"%~f0\"\n";
-    bat.close();
-    MessageBoxA(NULL, "Please close the window where the project is located", "Info", MB_OK | MB_ICONINFORMATION);
-    // Ejecutar batch de forma oculta
-    ShellExecuteW(NULL, L"runas", batFile.c_str(), NULL, NULL, SW_HIDE);
     return 0;
 }
