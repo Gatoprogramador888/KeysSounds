@@ -368,18 +368,31 @@ namespace KeySoundEditor {
 		private: System::Void BTN_ADDCO_Click(System::Object^ sender, System::EventArgs^ e)
 		{
 			CreationConfiguration^ formName = gcnew CreationConfiguration();
-			if (formName->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+			if (formName->ShowDialog() != System::Windows::Forms::DialogResult::OK) return;
+			
+			String^ name = formName->name;
+			int index = Configs->FindString(name);
+			if (index != -1 || name == "Music_Directory")
 			{
-				String^ name = formName->name;
-				Configs->Items->Add(name);
-				wrapperSettings->AddConfiguration(name);
+				MessageBox::Show(String::Format(name, "exists"), "Información", System::Windows::Forms::MessageBoxButtons::OK,
+				System::Windows::Forms::MessageBoxIcon::Information);
+				return;
 			}
+			Configs->Items->Add(name);
+			wrapperSettings->AddConfiguration(name);
 		}
 
 		private: System::Void BTN_DELCON_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
 			int select = Configs->SelectedIndex;
 			String^ setting = Configs->Text;
+			if (select == -1 || setting == "Music_Directory")
+			{
+				MessageBox::Show("You can't delete" + setting, "Información", System::Windows::Forms::MessageBoxButtons::OK,
+					System::Windows::Forms::MessageBoxIcon::Information);
+				return;
+
+			}
 			wrapperSettings->DeleteConfiguration(setting);
 			Configs->Items->RemoveAt(select);
 			Configs->SelectedIndex = select - 1;
@@ -604,8 +617,6 @@ private: System::Void Editor_FormClosing(System::Object^ sender, System::Windows
 			e->Cancel = true;
 		}
 	}
-
-	//Process::StartProcessByName(KEYSOUNDHOOK);
 }
 };
 
